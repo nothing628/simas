@@ -12,6 +12,10 @@
         @apply text-sm overflow-y-auto overflow-x-hidden leading-normal;
         @apply text-[#6A7287] font-sans;
     }
+
+    h2 {
+        @apply text-[#202C4B];
+    }
 }
 
 @layer components {
@@ -19,7 +23,61 @@
         @apply bg-white;
     }
 
+    .card {
+        @apply mb-6 bg-white border border-[#E9EDF4] rounded-md relative;
+        @apply transition-all duration-500 ease-in-out;
+        box-shadow: 0px 4.4px 12px -1px rgba(222, 222, 222, 0.3607843137);
+    }
+
+    .card-body {
+        @apply grow shrink basis-auto;
+    }
+
+    .card .card-body {
+        @apply p-5;
+    }
+
     .row {
         @apply flex flex-wrap mt-0 -mx-3;
+    }
+
+    .btn {
+        @apply rounded-md cursor-pointer py-2 px-3 text-sm font-medium;
+        @apply transition-all duration-500;
+    }
+
+    .btn.btn-primary {
+        @apply text-white bg-[#506EE4] border border-[#506EE4];
+    }
+
+    .form-label {
+        @apply text-sm font-medium text-[#202C4B] mb-2 inline-block;
+    }
+
+    .form-control {
+        @apply border border-[#E9EDF4] rounded-md h-[38px];
+        @apply text-[#202C4B] bg-white text-sm appearance-none;
+        @apply transition-all duration-500 py-2 px-3 block w-full;
+    }
+
+    .form-check {
+        @apply block pl-6;
+    }
+
+    .form-check .form-check-input {
+        @apply float-left -ml-6;
+    }
+
+    .form-check-md .form-check-input {
+        @apply w-5 h-5;
+    }
+
+    .form-check-input[type="checkbox"] {
+        @apply rounded-sm;
+    }
+
+    .form-check-input {
+        @apply bg-white border border-[#E9EDF4] appearance-none;
+        @apply checked:bg-[#3D5EE1] checked:border-[#3D5EE1];
     }
 }

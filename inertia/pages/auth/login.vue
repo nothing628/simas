@@ -26,12 +26,47 @@ import CsrfToken from '~/components/CsrfToken.vue';
                                         <div class="mx-auto mb-12 text-center">
                                             <h1>Login Page</h1>
                                         </div>
-                                        
-                                        <div class="mb-6 bg-white border border-[#E9EDF4] rounded-md relative">
+
+                                        <div class="card">
                                             <CsrfToken />
-                                            <input class="border" name="email" type="email" />
-                                            <input class="border" name="password" type="password" />
-                                            <button type="submit">Login</button>
+                                            <div class="card-body p-6">
+                                                <div class="mb-6">
+                                                    <h2 class="mb-2 font-bold text-2xl">Selamat Datang</h2>
+                                                    <p class="mb-0">Please enter your details to sign in</p>
+                                                </div>
+                                                <div class="mb-4">
+                                                    <label class="form-label">Alamat Email</label>
+                                                    <div class="relative mb-4">
+                                                        <span></span>
+                                                        <input class="form-control" name="email" type="email" />
+                                                    </div>
+                                                    <label class="form-label">Kata Sandi</label>
+                                                    <div class="relative mb-4">
+                                                        <span></span>
+                                                        <input class="form-control" name="password" type="password" />
+                                                    </div>
+                                                </div>
+                                                <div class="flex relative items-center justify-between mb-4">
+                                                    <div class="flex items-center">
+                                                        <div class="form-check form-check-md mb-0">
+                                                            <input class="form-check-input mt-0" type="checkbox">
+                                                        </div>
+                                                        <p class="mb-0 ml-1">Ingat saya</p>
+                                                    </div>
+                                                    <div class="text-right">
+                                                        <a class="text-[#E82646] cursor-pointer transition-all duration-500">Lupa sandi?</a>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-4">
+                                                    <button class="btn btn-primary w-full" type="submit">Masuk</button>
+                                                </div>
+                                                <div class="text-center">
+                                                    <h6 class="text-[#202C4B] mb-0 text-[15px]">Belum memiliki akun?
+                                                        <a
+                                                            class="relative text-[#3D5EE1] cursor-pointer transition-all duration-500">Buat Akun</a>
+                                                    </h6>
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <div class="mt-12 text-center">
