@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { Head } from '@inertiajs/vue3'
 import CsrfToken from '~/components/CsrfToken.vue';
+
+const getCurrentYear = () => {
+    return new Date().getFullYear()
+}
 </script>
 
 <template>
@@ -24,7 +28,7 @@ import CsrfToken from '~/components/CsrfToken.vue';
                                 <form method="post" enctype="multipart/form-data">
                                     <div>
                                         <div class="mx-auto mb-12 text-center">
-                                            <h1>Login Page</h1>
+                                            <img class="h-10 max-w-full inline" :src="'/img/logo.svg'" />
                                         </div>
 
                                         <div class="card">
@@ -32,7 +36,7 @@ import CsrfToken from '~/components/CsrfToken.vue';
                                             <div class="card-body p-6">
                                                 <div class="mb-6">
                                                     <h2 class="mb-2 font-bold text-2xl">Selamat Datang</h2>
-                                                    <p class="mb-0">Please enter your details to sign in</p>
+                                                    <p class="mb-0">Harap masukkan data untuk masuk</p>
                                                 </div>
                                                 <div class="mb-4">
                                                     <label class="form-label">Alamat Email</label>
@@ -70,7 +74,7 @@ import CsrfToken from '~/components/CsrfToken.vue';
                                         </div>
 
                                         <div class="mt-12 text-center">
-                                            <p class="mb-0">Copyright © ???? - a</p>
+                                            <p class="mb-0">Copyright © {{getCurrentYear()}} - a</p>
                                         </div>
                                     </div>
                                 </form>
