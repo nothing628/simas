@@ -70,6 +70,7 @@
     "datatables.net-responsive-dt": "^3.0.7",
     "datatables.net-scroller-dt": "^2.4.3",
     "datatables.net-vue3": "^3.0.4",
+    "dropzone": "^6.0.0-beta.2",
     "edge.js": "^6.2.1",
     "fullcalendar": "^6.1.19",
     "luxon": "^3.7.2",
