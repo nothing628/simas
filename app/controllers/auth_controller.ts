@@ -24,6 +24,11 @@ export default class AuthController {
         response.redirect('/admin')
     }
 
+    async logout({ response, auth }: HttpContext) {
+        await auth.use('web').logout()
+        return response.redirect('/auth/login')
+    }
+
     login({ inertia }: HttpContext) {
         return inertia.render("auth/login")
     }

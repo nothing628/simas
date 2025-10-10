@@ -15,6 +15,7 @@ const AuthController = () => import("#controllers/auth_controller")
 router.on('/').renderInertia('home')
 router.post('auth/login', [AuthController, 'attemptLogin']).use(middleware.guest())
 router.get('auth/login', [AuthController, 'login']).use(middleware.guest())
+router.post('auth/logout', [AuthController, 'logout']).use(middleware.auth())
 router
     .get('admin', [AdminController, 'index'])
     .use(middleware.auth())
