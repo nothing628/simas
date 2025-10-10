@@ -2,3 +2,24 @@
 @import 'datatables.net-dt';
 @import 'datatables.net-responsive-dt';
 @import 'datatables.net-scroller-dt';
+
+@theme {
+    --font-sans: 'Roboto', sans-serif;
+}
+
+@layer base {
+    body {
+        @apply text-sm overflow-y-auto overflow-x-hidden leading-normal;
+        @apply text-[#6A7287] font-sans;
+    }
+}
+
+@layer components {
+    .account-page {
+        @apply bg-white;
+    }
+
+    .row {
+        @apply flex flex-wrap mt-0 -mx-3;
+    }
+}
