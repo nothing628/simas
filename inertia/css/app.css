@@ -80,4 +80,49 @@
         @apply bg-white border border-[#E9EDF4] appearance-none;
         @apply checked:bg-[#3D5EE1] checked:border-[#3D5EE1];
     }
+
+    .header {
+        @apply h-14 z-10 bg-white fixed top-0 left-0 right-0;
+        @apply transition-all duration-500 ease-in-out;
+        @apply border-b border-b-[#E9EDF4];
+    }
+
+    .header .header-left {
+        @apply flex items-center justify-between float-left h-14;
+        @apply text-center z-[1] bg-white py-0 px-[15px];
+        @apply transition-all duration-500 ease-in-out;
+        @apply border-b border-b-[#E9EDF4];
+        @apply absolute w-full;
+        @apply lg:relative lg:w-[252px];
+    }
+
+    .header .mobile-btn {
+        @apply text-[#3D5EE1] text-2xl h-[60px] w-[60px] leading-[60px];
+        @apply z-[2] py-0 px-5 absolute top-0 left-0 block;
+        @apply lg:hidden;
+    }
+
+    .header .mobile-user-menu {
+        @apply text-white text-2xl h-[60px] w-[60px] leading-[60px];
+        @apply z-[2] py-0 px-5 block float-right absolute top-0 right-0;
+        @apply lg:hidden;
+    }
+
+    .header .header-left .logo {
+        @apply text-[#202C4B] text-center w-full cursor-pointer inline-block leading-0;
+        @apply transition-all duration-500 ease-in-out;
+        @apply lg:w-auto;
+    }
+
+    .dropdown-menu {
+        @apply border border-[#E9EDF4] text-[#202C4B] bg-white z-[4] block;
+        @apply transition-all duration-500 ease-in-out mt-2 opacity-100;
+        @apply visible absolute top-0 right-0 text-sm shadow-lg rounded-md;
+        @apply min-w-40;
+    }
+
+    .dropdown-item {
+        @apply text-[#202C4B] text-sm leading-10;
+        @apply block w-full clear-both bg-transparent py-0 px-2.5 whitespace-nowrap;
+    }
 }
