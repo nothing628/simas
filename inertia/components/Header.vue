@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { ref } from 'vue'
+import HeaderMenu from './HeaderMenu.vue'
 
 const dropdownToogle = ref(true)
 </script>
@@ -24,7 +25,7 @@ const dropdownToogle = ref(true)
             </span>
         </a>
 
-        <div></div>
+        <HeaderMenu />
 
         <div class="mobile-user-menu">
             <a class="text-[#3D5EE1] p-0 block transition-colors duration-150 ease-in-out" href="#"
