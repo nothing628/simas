@@ -167,4 +167,19 @@
     .btn-icon {
         @apply w-[37px] h-[37px];
     }
+
+    .notification-status-dot {
+        @apply w-1.5 h-1.5 bg-[#E82646] rounded-full absolute right-[5px] top-[5px] z-[1];
+        @apply before:content-[''] before:absolute before:w-2.5 before:h-2.5 before:animate-pulse;
+        @apply before:opacity-100 before:rounded-full before:-top-0.5 before:-right-0.5;
+        @apply before:bg-[#F493A3] before:border-[5px] before:border-[#F8BEC8];
+    }
+
+    .avatar {
+        @apply w-10 h-10 inline-flex items-center justify-center rounded text-white font-medium relative;
+    }
+
+    .avatar.avatar-md {
+        @apply w-8 h-8 leading-8 text-sm;
+    }
 }
