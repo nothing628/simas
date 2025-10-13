@@ -14,10 +14,11 @@
   }" v-bind="$props" :theme="finalTheme" :target-nodes="getTargetNodes"
     :popper-node="() => ($refs as any).popperContent.$el" :class="[
       themeClass,
-    ]" @show="() => $emit('show')" @hide="() => $emit('hide')" @update:shown="(shown) => $emit('update:shown', shown)"
-    @apply-show="() => $emit('apply-show')" @apply-hide="() => $emit('apply-hide')"
-    @close-group="() => $emit('close-group')" @close-directive="() => $emit('close-directive')"
-    @auto-hide="() => $emit('auto-hide')" @resize="() => $emit('resize')">
+    ]" @show="() => $emit('show')" @hide="() => $emit('hide')"
+    @update:shown="(shown: boolean) => $emit('update:shown', shown)" @apply-show="() => $emit('apply-show')"
+    @apply-hide="() => $emit('apply-hide')" @close-group="() => $emit('close-group')"
+    @close-directive="() => $emit('close-directive')" @auto-hide="() => $emit('auto-hide')"
+    @resize="() => $emit('resize')">
     <slot :shown="isShown" :show="show" :hide="hide" />
 
     <PopperContent ref="popperContent" :popper-id="popperId" :theme="finalTheme" :shown="isShown"
@@ -262,7 +263,7 @@ export default defineComponent({
   emits: {
     show: () => true,
     hide: () => true,
-    'update:shown': (shown: boolean) => true,
+    'update:shown': (_shown: boolean) => true,
     'apply-show': () => true,
     'apply-hide': () => true,
     'close-group': () => true,
