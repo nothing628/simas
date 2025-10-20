@@ -1,6 +1,6 @@
 import { assign } from './util/assign-deep'
 import { config, FloatingVueConfig } from './config'
-import 'vue-resize/dist/vue-resize.css'
+import { ObjectPlugin, FunctionPlugin } from 'vue'
 import './style.css'
 // Components
 import PrivateDropdown from './components/Dropdown'
@@ -12,6 +12,7 @@ import PrivatePopperWrapper from './components/PopperWrapper.vue'
 import PrivateThemeClass from './components/ThemeClass'
 import PrivateTooltip from './components/Tooltip'
 import PrivateTooltipDirective from './components/TooltipDirective.vue'
+import PrivateResizeObserver from './components/ResizeObserver.vue'
 // Directives
 import PrivateVTooltip from './directives/v-tooltip'
 import PrivateVClosePopper from './directives/v-close-popper'
@@ -41,6 +42,7 @@ export const PopperWrapper = PrivatePopperWrapper
 export const ThemeClass = PrivateThemeClass
 export const Tooltip = PrivateTooltip
 export const TooltipDirective = PrivateTooltipDirective
+export const ResizeObserver = PrivateResizeObserver
 // Utils
 export { hideAllPoppers, recomputeAllPoppers } from './components/Popper'
 export * from './util/events'
@@ -51,9 +53,9 @@ export type { TriggerEvent } from './components/PopperWrapper.vue'
 
 /* Vue plugin */
 
-export function install (app, options: FloatingVueConfig = {}) {
-  if (app.$_vTooltipInstalled) return
-  app.$_vTooltipInstalled = true
+export const install: FunctionPlugin = (app, options: FloatingVueConfig = config) => {
+  if (app.config.globalProperties.$_vTooltipInstalled) return
+  app.config.globalProperties.$_vTooltipInstalled = true
 
   assign(config, options)
 
@@ -64,13 +66,13 @@ export function install (app, options: FloatingVueConfig = {}) {
   app.component('VTooltip', PrivateTooltip)
   app.component('VDropdown', PrivateDropdown)
   app.component('VMenu', PrivateMenu)
+  app.component('ResizeObserver', PrivateResizeObserver)
 }
 
-const plugin = {
+const plugin: ObjectPlugin<FloatingVueConfig> = {
   // eslint-disable-next-line no-undef
-  version: '5.2.2', //VERSION
+  // version: '5.2.2', //VERSION
   install,
-  options: config,
 }
 
 export default plugin

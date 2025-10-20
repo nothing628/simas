@@ -10,6 +10,7 @@ import DataTable from 'datatables.net-vue3'
 import DataTablesCore from 'datatables.net-dt';
 import 'datatables.net-responsive-dt';
 import 'datatables.net-scroller-dt';
+import FloatingVue from '../components/floating-vue'
 
 /* add fontawesome core */
 import { library } from '@fortawesome/fontawesome-svg-core'
@@ -39,7 +40,7 @@ createInertiaApp({
     DataTable.use(DataTablesCore);
     
     createSSRApp({ render: () => h(App, props) })
-    
+      .use(FloatingVue)
       .use(plugin)
       .mount(el)
   },

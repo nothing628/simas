@@ -45,7 +45,7 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue'
-import { ResizeObserver } from 'vue-resize'
+import ResizeObserver from './ResizeObserver.vue'
 import ThemeClass from './ThemeClass'
 
 export default defineComponent({
