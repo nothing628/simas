@@ -116,13 +116,34 @@ const { floatingStyles: langStyle, isShow: langShow, toggleShow: langToggle, flo
                     </template>
                 </VDropdown>
 
-                <div class="dropdown ml-1">
-                    <a class="dropdown-toggle flex items-center">
+                <VDropdown :distance="6" class="ml-1">
+                    <a class="dropdown-toggle flex items-center cursor-pointer">
                         <span class="avatar avatar-md rounded">
                             <img class="w-full h-full rounded max-w-full" :src="'/img/avatar.jpg'" />
                         </span>
                     </a>
-                </div>
+
+                    <template #popper>
+                        <div class="block min-w-[200px] mt-2">
+                            <div class="block">
+                                <div class="flex items-center p-2">
+                                    <span class="w-8 h-8 leading-8 text-sm rounded-full relative inline-flex items-center justify-center text-white font-medium mr-2 before:content-[''] before:bg-[#1ABE17] before:absolute before:rounded-full before:w-3 before:h-3 before:border-2 before:border-white before:right-0 before:bottom-0 before:box-border">
+                                        <img class="w-full h-full rounded-full" :src="'/img/avatar.jpg'" />
+                                    </span>
+                                    <div>
+                                        <h6 class="text-[#202C4B] text-[15px] font-medium">Kevin Larry</h6>
+                                        <p class="text-primary mb-0">Administrator</p>
+                                    </div>
+                                </div>
+                                <hr class="m-0 border-[#E9EDF4]"></hr>
+                                <a class="inline-flex items-center p-2 w-full text-[#202C4B] text-sm cursor-pointer whitespace-nowrap transition-all duration-300 ease-in-out hover:bg-[#F4F6FA]">My Profile</a>
+                                <a class="inline-flex items-center p-2 w-full text-[#202C4B] text-sm cursor-pointer whitespace-nowrap transition-all duration-300 ease-in-out hover:bg-[#F4F6FA]">Settings</a>
+                                <hr class="m-0 border-[#E9EDF4]"></hr>
+                                <a class="inline-flex items-center p-2 w-full text-[#202C4B] text-sm cursor-pointer whitespace-nowrap transition-all duration-300 ease-in-out hover:bg-[#F4F6FA]">Logout</a>
+                            </div>
+                        </div>
+                    </template>
+                </VDropdown>
             </div>
         </div>
     </div>

@@ -5,6 +5,7 @@
 
 @theme {
     --font-sans: 'Roboto', sans-serif;
+    --color-primary: #3D5EE1;
 }
 
 @layer base {
