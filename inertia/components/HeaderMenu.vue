@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { useDropdown } from '~/utils/dropdown'
+import VDropdown from '~/components/floating-vue/components/Dropdown'
 
 const { floatingStyles: thnAjarStyle, isShow: thnAjarShow, toggleShow: thnAjarToggle, floating: thnAjarFlo, reference: thnAjarRef } = useDropdown()
 const { floatingStyles: langStyle, isShow: langShow, toggleShow: langToggle, floating: langFlo, reference: langRef } = useDropdown()
@@ -57,12 +58,63 @@ const { floatingStyles: langStyle, isShow: langShow, toggleShow: langToggle, flo
                     </a>
                 </div>
 
-                <div class="pr-1">
+                <VDropdown :distance="6" class="pr-1">
+                    <!-- This will be the popover reference (for the events and position) -->
                     <a class="btn btn-outline-light bg-white btn-icon relative mr-1">
                         <font-awesome-icon icon="fa-regular fa-bell" />
                         <span class="notification-status-dot"></span>
                     </a>
-                </div>
+
+                    <!-- This will be the content of the popover -->
+                    <template #popper>
+                        <div class="p-6 bg-white text-[#1F2B4A] text-sm min-w-[450px] max-w-full">
+                            <div class="flex justify-between items-center mb-4 pb-4 border-b border-b-[#E9EDF4]">
+                                <h4 class="text-lg font-semibold text-[#202C4B]">Notifications (2)</h4>
+                                <div class="flex items-center">
+                                    <a class="text-[#3D5EE1] text-[15px] leading-none mr-4">Mark all as read</a>
+                                    <VDropdown class="relative">
+                                        <a><font-awesome-icon icon="fa-regular fa-calendar" />Today</a>
+
+                                        <template #popper>
+                                            <ul class="p-4 mt-2 bg-white text-[#1F2B4A] text-sm lg:min-w-[200px] lg:block">
+                                                <li><a class="block cursor-pointer w-full clear-both whitespace-nowrap bg-transparent text-sm text-[#202C4B] px-[15px] py-2.5 transition-all duration-300 ease-in-out hover:bg-[#F4F6FA]">This Week</a></li>
+                                                <li><a class="block cursor-pointer w-full clear-both whitespace-nowrap bg-transparent text-sm text-[#202C4B] px-[15px] py-2.5 transition-all duration-300 ease-in-out hover:bg-[#F4F6FA]">Last Week</a></li>
+                                                <li><a class="block cursor-pointer w-full clear-both whitespace-nowrap bg-transparent text-sm text-[#202C4B] px-[15px] py-2.5 transition-all duration-300 ease-in-out hover:bg-[#F4F6FA]">Last Month</a></li>
+                                            </ul>
+                                        </template>
+                                    </VDropdown>
+                                </div>
+                            </div>
+                            <div class="h-[270px] overflow-y-auto relative">
+                                <div class="flex flex-col">
+                                    <div class="border-b border-b-[#E9EDF4] mb-4 pb-4 last:pb-0 last:border-b-0">
+                                        <a>
+                                            <div class="flex">
+                                                <span class="inline-flex items-center justify-center relative rounded-sm w-[45px] h-[45px] leading-[45px] text-white mr-2 shrink-0">
+                                                    <img class="w-full h-full rounded-sm" :src="'/img/avatar.jpg'" />
+                                                </span>
+                                                <div class="grow">
+                                                    <p class="mb-1">
+                                                        <span class="text-[#202C4B] font-semibold">Shawn</span> performance in Math is below the threshold.
+                                                    </p>
+                                                    <span>Just Now</span>
+                                                    <div class="flex justify-start items-center mt-1">
+                                                        <span class="btn btn-light btn-sm mr-2">Deny</span>
+                                                        <span class="btn btn-primary btn-sm">Allow</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex p-0">
+                                <a class="btn btn-light w-full mr-2">Cancel</a>
+                                <a class="btn btn-primary w-full">View All</a>
+                            </div>
+                        </div>
+                    </template>
+                </VDropdown>
 
                 <div class="dropdown ml-1">
                     <a class="dropdown-toggle flex items-center">

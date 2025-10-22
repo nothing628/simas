@@ -50,6 +50,14 @@
         @apply text-white bg-[#506EE4] border border-[#506EE4];
     }
 
+    .btn.btn-light {
+        @apply text-[#515B73] bg-[#E9EDF4] border border-[#E9EDF4];
+    }
+
+    .btn.btn-sm {
+        @apply text-xs py-1 px-2;
+    }
+
     .form-label {
         @apply text-sm font-medium text-[#202C4B] mb-2 inline-block;
     }
