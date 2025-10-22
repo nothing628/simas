@@ -4,7 +4,6 @@ import { useDropdown } from '~/utils/dropdown'
 import VDropdown from '~/components/floating-vue/components/Dropdown'
 
 const { floatingStyles: thnAjarStyle, isShow: thnAjarShow, toggleShow: thnAjarToggle, floating: thnAjarFlo, reference: thnAjarRef } = useDropdown()
-const { floatingStyles: langStyle, isShow: langShow, toggleShow: langToggle, floating: langFlo, reference: langRef } = useDropdown()
 </script>
 
 <template>
@@ -32,14 +31,13 @@ const { floatingStyles: langStyle, isShow: langShow, toggleShow: langToggle, flo
                     </div>
                 </div>
 
-                <div class="ml-1 pr-1">
-                    <div class="dropdown">
-                        <a ref="langRef" @click="langToggle"
-                            class="btn btn-outline-light btn-icon bg-white flex items-center mr-1 p-2 hover:bg-[#E9EDF4]">
-                            <img class="h-auto max-w-full rounded-full" :src="'/img/flags/us.png'" />
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right" :style="langStyle" ref="langFlo"
-                            :class="{ 'show': langShow }">
+                <VDropdown :distance="6" placement="bottom-end" class="ml-1 pr-1">
+                    <a class="btn btn-outline-light btn-icon bg-white flex items-center mr-1 p-2 hover:bg-[#E9EDF4]">
+                        <img class="h-auto max-w-full rounded-full" :src="'/img/flags/us.png'" />
+                    </a>
+
+                    <template #popper>
+                        <div class="lg:min-w-[200px] lg:block text-[#1F2B4A] bg-white">
                             <a class="dropdown-item active flex items-center">
                                 <img class="h-auto max-w-full rounded-full mr-2 w-[22px]" :src="'/img/flags/us.png'" />
                                 English
@@ -49,8 +47,8 @@ const { floatingStyles: langStyle, isShow: langShow, toggleShow: langToggle, flo
                                 Indonesia
                             </a>
                         </div>
-                    </div>
-                </div>
+                    </template>
+                </VDropdown>
 
                 <div class="pr-1">
                     <a class="dark-mode-toggle btn btn-outline-light bg-white btn-icon mr-1">
@@ -58,7 +56,7 @@ const { floatingStyles: langStyle, isShow: langShow, toggleShow: langToggle, flo
                     </a>
                 </div>
 
-                <VDropdown :distance="6" class="pr-1">
+                <VDropdown :distance="6" placement="bottom-end" class="pr-1">
                     <!-- This will be the popover reference (for the events and position) -->
                     <a class="btn btn-outline-light bg-white btn-icon relative mr-1">
                         <font-awesome-icon icon="fa-regular fa-bell" />
@@ -76,10 +74,17 @@ const { floatingStyles: langStyle, isShow: langShow, toggleShow: langToggle, flo
                                         <a><font-awesome-icon icon="fa-regular fa-calendar" />Today</a>
 
                                         <template #popper>
-                                            <ul class="p-4 mt-2 bg-white text-[#1F2B4A] text-sm lg:min-w-[200px] lg:block">
-                                                <li><a class="block cursor-pointer w-full clear-both whitespace-nowrap bg-transparent text-sm text-[#202C4B] px-[15px] py-2.5 transition-all duration-300 ease-in-out hover:bg-[#F4F6FA]">This Week</a></li>
-                                                <li><a class="block cursor-pointer w-full clear-both whitespace-nowrap bg-transparent text-sm text-[#202C4B] px-[15px] py-2.5 transition-all duration-300 ease-in-out hover:bg-[#F4F6FA]">Last Week</a></li>
-                                                <li><a class="block cursor-pointer w-full clear-both whitespace-nowrap bg-transparent text-sm text-[#202C4B] px-[15px] py-2.5 transition-all duration-300 ease-in-out hover:bg-[#F4F6FA]">Last Month</a></li>
+                                            <ul
+                                                class="p-4 mt-2 bg-white text-[#1F2B4A] text-sm lg:min-w-[200px] lg:block">
+                                                <li><a
+                                                        class="block cursor-pointer w-full clear-both whitespace-nowrap bg-transparent text-sm text-[#202C4B] px-[15px] py-2.5 transition-all duration-300 ease-in-out hover:bg-[#F4F6FA]">This
+                                                        Week</a></li>
+                                                <li><a
+                                                        class="block cursor-pointer w-full clear-both whitespace-nowrap bg-transparent text-sm text-[#202C4B] px-[15px] py-2.5 transition-all duration-300 ease-in-out hover:bg-[#F4F6FA]">Last
+                                                        Week</a></li>
+                                                <li><a
+                                                        class="block cursor-pointer w-full clear-both whitespace-nowrap bg-transparent text-sm text-[#202C4B] px-[15px] py-2.5 transition-all duration-300 ease-in-out hover:bg-[#F4F6FA]">Last
+                                                        Month</a></li>
                                             </ul>
                                         </template>
                                     </VDropdown>
@@ -90,12 +95,15 @@ const { floatingStyles: langStyle, isShow: langShow, toggleShow: langToggle, flo
                                     <div class="border-b border-b-[#E9EDF4] mb-4 pb-4 last:pb-0 last:border-b-0">
                                         <a>
                                             <div class="flex">
-                                                <span class="inline-flex items-center justify-center relative rounded-sm w-[45px] h-[45px] leading-[45px] text-white mr-2 shrink-0">
+                                                <span
+                                                    class="inline-flex items-center justify-center relative rounded-sm w-[45px] h-[45px] leading-[45px] text-white mr-2 shrink-0">
                                                     <img class="w-full h-full rounded-sm" :src="'/img/avatar.jpg'" />
                                                 </span>
                                                 <div class="grow">
                                                     <p class="mb-1">
-                                                        <span class="text-[#202C4B] font-semibold">Shawn</span> performance in Math is below the threshold.
+                                                        <span class="text-[#202C4B] font-semibold">Shawn</span>
+                                                        performance in Math is below the
+                                                        threshold.
                                                     </p>
                                                     <span>Just Now</span>
                                                     <div class="flex justify-start items-center mt-1">
@@ -116,7 +124,7 @@ const { floatingStyles: langStyle, isShow: langShow, toggleShow: langToggle, flo
                     </template>
                 </VDropdown>
 
-                <VDropdown :distance="6" class="ml-1">
+                <VDropdown :distance="6" placement="bottom-end" class="ml-1">
                     <a class="dropdown-toggle flex items-center cursor-pointer">
                         <span class="avatar avatar-md rounded">
                             <img class="w-full h-full rounded max-w-full" :src="'/img/avatar.jpg'" />
@@ -127,7 +135,8 @@ const { floatingStyles: langStyle, isShow: langShow, toggleShow: langToggle, flo
                         <div class="block min-w-[200px] mt-2">
                             <div class="block">
                                 <div class="flex items-center p-2">
-                                    <span class="w-8 h-8 leading-8 text-sm rounded-full relative inline-flex items-center justify-center text-white font-medium mr-2 before:content-[''] before:bg-[#1ABE17] before:absolute before:rounded-full before:w-3 before:h-3 before:border-2 before:border-white before:right-0 before:bottom-0 before:box-border">
+                                    <span
+                                        class="w-8 h-8 leading-8 text-sm rounded-full relative inline-flex items-center justify-center text-white font-medium mr-2 before:content-[''] before:bg-[#1ABE17] before:absolute before:rounded-full before:w-3 before:h-3 before:border-2 before:border-white before:right-0 before:bottom-0 before:box-border">
                                         <img class="w-full h-full rounded-full" :src="'/img/avatar.jpg'" />
                                     </span>
                                     <div>
@@ -135,11 +144,17 @@ const { floatingStyles: langStyle, isShow: langShow, toggleShow: langToggle, flo
                                         <p class="text-primary mb-0">Administrator</p>
                                     </div>
                                 </div>
-                                <hr class="m-0 border-[#E9EDF4]"></hr>
-                                <a class="inline-flex items-center p-2 w-full text-[#202C4B] text-sm cursor-pointer whitespace-nowrap transition-all duration-300 ease-in-out hover:bg-[#F4F6FA]">My Profile</a>
-                                <a class="inline-flex items-center p-2 w-full text-[#202C4B] text-sm cursor-pointer whitespace-nowrap transition-all duration-300 ease-in-out hover:bg-[#F4F6FA]">Settings</a>
-                                <hr class="m-0 border-[#E9EDF4]"></hr>
-                                <a class="inline-flex items-center p-2 w-full text-[#202C4B] text-sm cursor-pointer whitespace-nowrap transition-all duration-300 ease-in-out hover:bg-[#F4F6FA]">Logout</a>
+                                <hr class="m-0 border-[#E9EDF4]">
+                                </hr>
+                                <a
+                                    class="inline-flex items-center p-2 w-full text-[#202C4B] text-sm cursor-pointer whitespace-nowrap transition-all duration-300 ease-in-out hover:bg-[#F4F6FA]">My
+                                    Profile</a>
+                                <a
+                                    class="inline-flex items-center p-2 w-full text-[#202C4B] text-sm cursor-pointer whitespace-nowrap transition-all duration-300 ease-in-out hover:bg-[#F4F6FA]">Settings</a>
+                                <hr class="m-0 border-[#E9EDF4]">
+                                </hr>
+                                <a
+                                    class="inline-flex items-center p-2 w-full text-[#202C4B] text-sm cursor-pointer whitespace-nowrap transition-all duration-300 ease-in-out hover:bg-[#F4F6FA]">Logout</a>
                             </div>
                         </div>
                     </template>
