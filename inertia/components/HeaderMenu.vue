@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { useDropdown } from '~/utils/dropdown'
 import VDropdown from '~/components/floating-vue/components/Dropdown'
-
-const { floatingStyles: thnAjarStyle, isShow: thnAjarShow, toggleShow: thnAjarToggle, floating: thnAjarFlo, reference: thnAjarRef } = useDropdown()
 </script>
 
 <template>
@@ -11,24 +8,30 @@ const { floatingStyles: thnAjarStyle, isShow: thnAjarShow, toggleShow: thnAjarTo
         <div class="nav user-menu">
             <div class="nav-item mr-auto"></div>
             <div class="flex items-center">
-                <div class="dropdown mr-2">
+                <VDropdown :distance="6" placement="bottom-end" class="mr-2">
                     <a class="btn btn-outline-light font-normal bg-white flex items-center p-2 hover:bg-[#E9EDF4]"
-                        href="#" ref="thnAjarRef" @click="thnAjarToggle">
+                        href="#">
                         <FontAwesomeIcon icon="fa-regular fa-calendar" class="mr-1" />
                         Tahun Ajar : 2024 / 2025
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right" :class="{ 'show': thnAjarShow }"
-                        :style="thnAjarStyle" ref="thnAjarFlo">
-                        <a class="dropdown-item flex items-center">
-                            Tahun Ajar : 2024 / 2025
-                        </a>
-                        <a class="dropdown-item flex items-center">
-                            Tahun Ajar : 2023 / 2024
-                        </a>
-                        <a class="dropdown-item flex items-center">
-                            Tahun Ajar : 2022 / 2023
-                        </a>
-                    </div>
+
+                    <template #popper>
+                        <div class="lg:min-w-[200px] lg:block text-sm text-[#1F2B4A] bg-white">
+                            <a class="dropdown-item flex items-center">
+                                Tahun Ajar : 2024 / 2025
+                            </a>
+                            <a class="dropdown-item flex items-center">
+                                Tahun Ajar : 2023 / 2024
+                            </a>
+                            <a class="dropdown-item flex items-center">
+                                Tahun Ajar : 2022 / 2023
+                            </a>
+                        </div>
+                    </template>
+                </VDropdown>
+                <div class="dropdown mr-2">
+
+
                 </div>
 
                 <VDropdown :distance="6" placement="bottom-end" class="ml-1 pr-1">
