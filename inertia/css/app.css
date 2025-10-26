@@ -206,4 +206,14 @@
     .page-wrapper .content {
         @apply bg-[#FBFBFD] p-6 pb-0;
     }
+
+    .sidebar .sidebar-menu .submenu-hdr {
+        @apply relative flex items-center uppercase text-[#9ca1af] text-xs font-semibold;
+        @apply mb-[14px];
+        @apply after:w-full after:content-[''] after:bg-[#e9edf4] after:h-px after:ml-2;
+    }
+
+    .sidebar .sidebar-menu .submenu-hdr span {
+        @apply shrink-0;
+    }
 }
