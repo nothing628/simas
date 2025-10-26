@@ -100,7 +100,7 @@
         @apply flex items-center justify-between float-left h-14;
         @apply text-center z-[1] bg-white py-0 px-[15px];
         @apply transition-all duration-500 ease-in-out;
-        @apply border-b border-b-[#E9EDF4];
+        @apply border-r border-r-[#E9EDF4];
         @apply absolute w-full;
         @apply lg:relative lg:w-[252px];
     }
@@ -190,5 +190,20 @@
 
     .avatar.avatar-md {
         @apply w-8 h-8 leading-8 text-sm;
+    }
+
+    .sidebar {
+        @apply flex fixed -ml-[575px] mt-0 bg-white border-r border-r-[#E9EDF4] w-full;
+        @apply top-14 left-0 bottom-0 transition-all duration-500 ease-in-out z-[41];
+        @apply lg:ml-0 sm:w-[252px] lg:z-[1];
+    }
+
+    .page-wrapper {
+        @apply relative pt-[60px] ml-0 lg:pt-14 lg:ml-[252px] left-0;
+        @apply transition-all duration-200 ease-in-out;
+    }
+
+    .page-wrapper .content {
+        @apply bg-[#FBFBFD] p-6 pb-0;
     }
 }
