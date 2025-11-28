@@ -6,12 +6,14 @@
 @theme {
     --font-sans: 'Roboto', sans-serif;
     --color-primary: #3D5EE1;
+    --color-semidark: #202c4b;
+    --color-semiabu: #6a7287;
 }
 
 @layer base {
     body {
         @apply text-sm overflow-y-auto overflow-x-hidden leading-normal;
-        @apply text-[#6A7287] font-sans;
+        @apply text-semiabu font-sans;
     }
 
     h2 {
@@ -207,6 +209,10 @@
         @apply bg-[#FBFBFD] p-6 pb-0;
     }
 
+    .page-wrapper .content.content-two {
+        @apply p-6;
+    }
+
     .sidebar .sidebar-menu .submenu-hdr {
         @apply relative flex items-center uppercase text-[#9ca1af] text-xs font-semibold;
         @apply mb-[14px];
@@ -215,5 +221,18 @@
 
     .sidebar .sidebar-menu .submenu-hdr span {
         @apply shrink-0;
+    }
+
+    .breadcrumb {
+        @apply flex flex-wrap p-0 mb-4;
+    }
+
+    .breadcrumb .breadcrumb-item.active {
+        @apply text-semidark;
+    }
+
+    .breadcrumb-item + .breadcrumb-item {
+        @apply pl-2;
+        @apply before:content-['/'] before:pr-2 before:float-left before:opacity-40 before:text-semiabu;
     }
 }
