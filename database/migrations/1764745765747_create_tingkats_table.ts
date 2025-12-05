@@ -8,6 +8,7 @@ export default class extends BaseSchema {
       table.increments('id')
       table.string('tingkat')
       table.integer('order')
+      table.boolean('is_active').defaultTo(false)
 
       table.timestamp('created_at')
       table.timestamp('updated_at')
