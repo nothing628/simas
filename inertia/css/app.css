@@ -8,6 +8,17 @@
     --color-primary: #3D5EE1;
     --color-semidark: #202c4b;
     --color-semiabu: #6a7287;
+
+    --color-light: #E9EDF4;
+    --color-light-100: #FDFDFE;
+    --color-light-200: #FBFBFD;
+    --color-light-300: #F8FAFC;
+    --color-light-400: #F6F8FB;
+    --color-light-500: #F4F6FA;
+    --color-light-600: #F2F4F8;
+    --color-light-700: #F0F2F7;
+    --color-light-800: #EDF1F6;
+    --color-light-900: #E9EDF4;
 }
 
 @layer base {

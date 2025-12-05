@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import Simplebar from '~/components/simplebar'
+import VerticalSidebar from './VerticalSidebar.vue';
 </script>
 
 <template>
@@ -8,27 +9,18 @@ import Simplebar from '~/components/simplebar'
         <!-- Slimscroll here -->
         <div class="sidebar-inner slimscroll w-full">
             <Simplebar data-simplebar-auto-hide="false">
-                <div class="sidebar-menu p-[15px]">
-                    <ul></ul>
+                <div id="sidebar-menu" class="sidebar-menu p-[15px]">
                     <ul>
                         <li class="mb-[5px]">
-                            <h6 class="submenu-hdr"><span>MAIN</span></h6>
-                            <ul class="block mb-[15px]">
-                                <li class="submenu overflow-hidden mb-[5px] rounded-md">
-                                    <a class="subdrop active">
-                                        <FontAwesomeIcon icon="fa-regular fa-calendar"></FontAwesomeIcon>
-                                        <span>Dashboard</span>
-                                        <span class="menu-arrow"></span>
-                                    </a>
-                                    <ul class="block py-0 mt-2.5">
-                                        <li><a class="active">Main Dashboard</a></li>
-                                        <li><a>Absent Dashboard</a></li>
-                                    </ul>
-                                </li>
-                                <li class="submenu overflow-hidden mb-[5px] rounded-md"></li>
-                            </ul>
+                            <a href="javascript:void(0);"
+                                class="flex items-center border border-light-900 bg-white rounded p-2 mb-6">
+                                <img :src="'/img/logo.svg'" class="avatar avatar-md max-w-full rounded"
+                                    alt="Profile" />
+                                <span class="text-semidark ml-2 font-normal">Global International</span>
+                            </a>
                         </li>
                     </ul>
+                    <VerticalSidebar />
                 </div>
             </Simplebar>
         </div>
