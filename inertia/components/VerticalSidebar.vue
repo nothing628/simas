@@ -152,7 +152,7 @@ const expandSubMenus = (menu: SidebarMenu) => {
     menu.showSubRoute = !menu.showSubRoute;
     current_active.value = menu.active_link
     // Save the state to localStorage
-    localStorage.setItem("openSubMenu", JSON.stringify(side_bar_data));
+    // localStorage.setItem("openSubMenu", JSON.stringify(side_bar_data.value));
 }
 
 const openMenu = (menu: SidebarMenu) => {

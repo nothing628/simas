@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import Simplebar from '~/components/simplebar'
 import VerticalSidebar from './VerticalSidebar.vue';
 </script>
@@ -8,7 +7,7 @@ import VerticalSidebar from './VerticalSidebar.vue';
     <div class="sidebar">
         <!-- Slimscroll here -->
         <div class="sidebar-inner slimscroll w-full">
-            <Simplebar data-simplebar-auto-hide="false">
+            <Simplebar class="h-full">
                 <div id="sidebar-menu" class="sidebar-menu p-[15px]">
                     <ul>
                         <li class="mb-[5px]">
