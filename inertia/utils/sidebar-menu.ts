@@ -39,28 +39,28 @@ export const sidebarSections: SidebarSection[] = [
         hasSubRoute: true,
         subMenus: [
           {
-            menuValue: "Pesan",
-            route: "/chat",
+            menuValue: 'Pesan',
+            route: '/chat',
           },
           {
-            menuValue: "Kalender",
-            route: "/chat",
+            menuValue: 'Kalender',
+            route: '/chat',
           },
           {
-            menuValue: "Surel",
-            route: "/chat",
+            menuValue: 'Surel',
+            route: '/chat',
           },
           {
-            menuValue: "Todo",
-            route: "/chat",
+            menuValue: 'Todo',
+            route: '/chat',
           },
           {
-            menuValue: "Catatan",
-            route: "/chat",
+            menuValue: 'Catatan',
+            route: '/chat',
           },
           {
-            menuValue: "Kelola Dokumen",
-            route: "/chat",
+            menuValue: 'Kelola Dokumen',
+            route: '/chat',
           },
         ],
       },
@@ -170,27 +170,290 @@ export const sidebarSections: SidebarSection[] = [
   {
     title: 'KELOLA',
     hasSubRoute: true,
-    menu: [],
+    menu: [
+      {
+        menuValue: 'SPP & Pembayaran',
+        route: '/spp',
+        active_link: '/spp',
+        icon: 'ti-report-money',
+        hasSubRoute: true,
+        subMenus: [
+          {
+            menuValue: "Jenis Pembayaran",
+            route: "/transport/route",
+          },
+          {
+            menuValue: "Grup Pembayaran",
+            route: "/transport/route",
+          },
+          {
+            menuValue: "Master Pembayaran",
+            route: "/transport/route",
+          },
+          {
+            menuValue: "Pembayaran Berjalan",
+            route: "/transport/route",
+          },
+        ],
+      },
+      {
+        menuValue: 'Perpustakaan',
+        route: '/library',
+        active_link: '/library',
+        icon: 'ti-notebook',
+        hasSubRoute: true,
+        subMenus: [
+          {
+            menuValue: "Daftar Anggota",
+            route: "/transport/route",
+          },
+          {
+            menuValue: "Daftar Buku",
+            route: "/transport/route",
+          },
+          {
+            menuValue: "Peminjaman",
+            route: "/transport/route",
+          },
+          {
+            menuValue: "Pengembalian",
+            route: "/transport/route",
+          },
+        ],
+      },
+      {
+        menuValue: 'Ekstrakurikuler',
+        route: '/eskul',
+        active_link: '/eskul',
+        icon: 'ti-run',
+        hasSubRoute: true,
+        subMenus: [
+          {
+            menuValue: "Daftar Eskul",
+            route: "/transport/route",
+          },
+        ],
+      },
+      {
+        menuValue: 'Asrama',
+        route: '/asrama',
+        active_link: '/asrama',
+        icon: 'ti-building-fortress',
+        hasSubRoute: true,
+        subMenus: [
+          {
+            menuValue: "Daftar Asrama",
+            route: "/transport/route",
+          },
+          {
+            menuValue: "Daftar Ruang",
+            route: "/transport/route",
+          },
+          {
+            menuValue: "Tipe Ruang",
+            route: "/transport/route",
+          },
+        ],
+      },
+      {
+        menuValue: 'Transportasi',
+        route: '/transport',
+        active_link: '/transport',
+        icon: 'ti-bus',
+        hasSubRoute: true,
+        subMenus: [
+          {
+            menuValue: "Rute",
+            route: "/transport/route",
+          },
+          {
+            menuValue: "Titik Jemput",
+            route: "/transport/route",
+          },
+          {
+            menuValue: "Kendaraan",
+            route: "/transport/route",
+          },
+          {
+            menuValue: "Pengemudi",
+            route: "/transport/route",
+          },
+          {
+            menuValue: "Tetapkan Kendaraan",
+            route: "/transport/route",
+          }
+        ],
+      },
+    ],
   },
   {
     title: 'HRM',
     hasSubRoute: true,
-    menu: [],
+    menu: [
+      {
+        menuValue: 'Staff',
+        route: '/staff',
+        active_link: '/staff',
+        icon: 'ti-users-group',
+      },
+      {
+        menuValue: 'Departemen',
+        route: '/department',
+        active_link: '/department',
+        icon: 'ti-layout-distribute-horizontal',
+      },
+      {
+        menuValue: 'Penempatan',
+        route: '/penempatan',
+        active_link: '/penempatan',
+        icon: 'ti-user-exclamation',
+      },
+      {
+        menuValue: 'Kehadiran',
+        route: '/attendance',
+        active_link: '/attendance',
+        icon: 'ti-calendar-share',
+        hasSubRoute: true,
+        subMenus: [
+          {
+            menuValue: "Kehadiran Murid",
+            route: "/attendance/murid",
+          },
+          {
+            menuValue: "Kehadiran Guru",
+            route: "/attendance/guru",
+          },
+          {
+            menuValue: "Kehadiran Staff",
+            route: "/attendance/staff",
+          },
+        ]
+      },
+      {
+        menuValue: 'Cuti',
+        route: '/leaves',
+        active_link: '/leaves',
+        icon: 'ti-calendar-stats',
+        hasSubRoute: true,
+        subMenus: [
+          {
+            menuValue: "Pengajuan Cuti",
+            route: "/leaves/list"
+          },
+          {
+            menuValue: "Persetujuan Cuti",
+            route: "/leaves/approve"
+          }
+        ]
+      },
+      {
+        menuValue: 'Hari Libur',
+        route: '/holiday',
+        active_link: '/holiday',
+        icon: 'ti-briefcase',
+      },
+      {
+        menuValue: 'Payroll',
+        route: '/payroll',
+        active_link: '/payroll',
+        icon: 'ti-moneybag',
+      },
+    ],
   },
   {
     title: 'KEUANGAN & AKUTANSI',
     hasSubRoute: true,
-    menu: [],
+    menu: [
+      {
+        menuValue: 'Akutansi',
+        route: '/accountant',
+        active_link: '/accountant',
+        icon: 'ti-swipe',
+        hasSubRoute: true,
+        subMenus: [
+          {
+            menuValue: "Jenis Transaksi",
+            route: "/transaction/type"
+          },
+          {
+            menuValue: "Pengeluaran",
+            route: "/transaction/type"
+          },
+          {
+            menuValue: "Pendapatan",
+            route: "/transaction/type"
+          },
+          {
+            menuValue: "Tagihan",
+            route: "/transaction/type"
+          },
+          {
+            menuValue: "Transaksi",
+            route: "/transaction/type"
+          },
+        ],
+      },
+    ],
   },
   {
     title: 'PENGUMUMAN',
     hasSubRoute: true,
-    menu: [],
+    menu: [
+      {
+        menuValue: 'Papan Pengumuman',
+        route: '/announcements',
+        active_link: '/announcements',
+        icon: 'ti-clipboard-data',
+      },
+      {
+        menuValue: 'Acara',
+        route: '/event',
+        active_link: '/event',
+        icon: 'ti-calendar-question',
+      },
+    ],
   },
   {
     title: 'LAPORAN',
     hasSubRoute: true,
-    menu: [],
+    menu: [
+      {
+        menuValue: 'Laporan Kehadiran',
+        route: '/report/attendance',
+        active_link: '/report/attendance',
+        icon: 'ti-calendar-due',
+      },
+      {
+        menuValue: 'Laporan Kelas',
+        route: '/report/class',
+        active_link: '/report/class',
+        icon: 'ti-graph',
+      },
+      {
+        menuValue: 'Laporan Murid',
+        route: '/report/student',
+        active_link: '/report/student',
+        icon: 'ti-chart-infographic',
+      },
+      {
+        menuValue: 'Rapor Murid',
+        route: '/report/grade',
+        active_link: '/report/grade',
+        icon: 'ti-calendar-x',
+      },
+      {
+        menuValue: 'Laporan Cuti',
+        route: '/report/leave',
+        active_link: '/report/leave',
+        icon: 'ti-line',
+      },
+      {
+        menuValue: 'Laporan Pembayaran',
+        route: '/report/fees',
+        active_link: '/report/fees',
+        icon: 'ti-mask',
+      },
+    ],
   },
   {
     title: 'PENGELOLAAN PENGGUNA',
