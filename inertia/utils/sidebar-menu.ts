@@ -480,14 +480,95 @@ export const sidebarSections: SidebarSection[] = [
     ],
   },
   {
+    title: "KONTEN",
+    hasSubRoute: true,
+    menu: [
+      {
+        menuValue: 'Halaman',
+        route: '/content/pages',
+        active_link: '/content/pages',
+        icon: 'ti-page-break',
+      },
+      {
+        menuValue: 'Berita',
+        route: '/content/blog',
+        active_link: '/content/blog',
+        icon: 'ti-brand-blogger',
+        hasSubRoute: true,
+        subMenus: [
+          {
+            menuValue: "Daftar Berita",
+            route: "/blog/list"
+          },
+          {
+            menuValue: "Kategori",
+            route: "/blog/list"
+          },
+          {
+            menuValue: "Tag",
+            route: "/blog/list"
+          },
+          {
+            menuValue: "Komentar",
+            route: "/blog/list"
+          },
+        ],
+      },
+      {
+        menuValue: 'Lokasi',
+        route: '/content/location',
+        active_link: '/content/location',
+        icon: 'ti-map-pin-search',
+      },
+      {
+        menuValue: 'Testimoni',
+        route: '/content/testimonials',
+        active_link: '/content/testimonials',
+        icon: 'ti-quote',
+      },
+      {
+        menuValue: 'FAQ',
+        route: '/content/faq',
+        active_link: '/content/faq',
+        icon: 'ti-question-mark',
+      },
+    ]
+  },
+  {
     title: 'LANGANAN',
     hasSubRoute: true,
-    menu: [],
+    menu: [
+      {
+        menuValue: 'Plan',
+        route: '/membership/plans',
+        active_link: '/membership/plans',
+        icon: 'ti-user-plus',
+      },
+      {
+        menuValue: 'Addons',
+        route: '/membership/addons',
+        active_link: '/membership/addons',
+        icon: 'ti-cone-plus',
+      },
+    ],
   },
   {
     title: 'DUKUNGAN',
     hasSubRoute: true,
-    menu: [],
+    menu: [
+      {
+        menuValue: 'Pesan Laporan',
+        route: '/support/messages',
+        active_link: '/support/messages',
+        icon: 'ti-message',
+      },
+      {
+        menuValue: 'Tiket',
+        route: '/support/ticket',
+        active_link: '/support/ticket',
+        icon: 'ti-ticket',
+      },
+    ],
   },
   {
     title: 'PENGATURAN',
