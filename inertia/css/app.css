@@ -6,7 +6,7 @@
 @theme {
     --font-sans: 'Roboto', sans-serif;
     --color-primary: #3D5EE1;
-    --color-semidark: #202c4b;
+    --color-dark: #202c4b;
     --color-semiabu: #6a7287;
 
     --color-light: #E9EDF4;
@@ -19,6 +19,16 @@
     --color-light-700: #F0F2F7;
     --color-light-800: #EDF1F6;
     --color-light-900: #E9EDF4;
+
+    --color-gray-100: #E6E8EB;
+    --color-gray-200: #CDD0D7;
+    --color-gray-300: #B5B9C3;
+    --color-gray-400: #9CA1AF;
+    --color-gray-500: #838A9B;
+    --color-gray-600: #6A7287;
+    --color-gray-700: #515B73;
+    --color-gray-800: #39435F;
+    --color-gray-900: #202C4B;
 }
 
 @layer base {
@@ -65,7 +75,7 @@
     }
 
     .btn.btn-light {
-        @apply text-[#515B73] bg-[#E9EDF4] border border-[#E9EDF4];
+        @apply text-gray-700 bg-[#E9EDF4] border border-[#E9EDF4];
     }
 
     .btn.btn-sm {
@@ -100,7 +110,7 @@
 
     .form-check-input {
         @apply bg-white border border-[#E9EDF4] appearance-none;
-        @apply checked:bg-[#3D5EE1] checked:border-[#3D5EE1];
+        @apply checked:bg-primary checked:border-primary;
     }
 
     .header {
@@ -119,7 +129,7 @@
     }
 
     .header .mobile-btn {
-        @apply text-[#3D5EE1] text-2xl h-[60px] w-[60px] leading-[60px];
+        @apply text-primary text-2xl h-[60px] w-[60px] leading-[60px];
         @apply z-[2] py-0 px-5 absolute top-0 left-0 block;
         @apply lg:hidden;
     }
@@ -182,8 +192,8 @@
     }
 
     .btn-outline-light {
-        @apply text-[#515B73] border border-[#E9edf4];
-        @apply hover:text-[#515B73] hover:bg-[#E9EDF4] hover:border-[#E9EDF4];
+        @apply text-gray-700 border border-[#E9edf4];
+        @apply hover:text-gray-700 hover:bg-[#E9EDF4] hover:border-[#E9EDF4];
     }
 
     .btn-icon {
@@ -239,7 +249,7 @@
     }
 
     .breadcrumb .breadcrumb-item.active {
-        @apply text-semidark;
+        @apply text-dark;
     }
 
     .breadcrumb-item + .breadcrumb-item {

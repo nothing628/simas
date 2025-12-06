@@ -2,6 +2,8 @@
 /// <reference path="../../config/inertia.ts" />
 
 import '../css/app.css';
+import '../css/tabler-icons.css';
+import '../css/typicons.css';
 import { createSSRApp, h } from 'vue'
 import type { DefineComponent } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'

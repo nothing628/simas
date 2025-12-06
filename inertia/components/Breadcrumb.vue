@@ -1,5 +1,5 @@
 <template>
-    <h3 class="text-xl text-semidark font-semibold page-title mb-1">Students</h3>
+    <h3 class="text-xl text-dark font-semibold page-title mb-1">Students</h3>
     <nav>
         <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item"><a href="/" class="">Dashboard</a></li>

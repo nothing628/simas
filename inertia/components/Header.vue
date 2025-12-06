@@ -19,16 +19,16 @@ const dropdownToogle = ref(true)
 
         <a class="mobile-btn">
             <span class="w-[30px] mt-5 inline-block">
-                <span class="bg-[#3D5EE1] block float-left h-[3px] mb-[7px] w-[30px] rounded-xs"></span>
-                <span class="bg-[#3D5EE1] block float-left h-[3px] mb-[7px] w-[15px] rounded-xs"></span>
-                <span class="bg-[#3D5EE1] block float-left h-[3px] mb-[7px] w-[30px] rounded-xs"></span>
+                <span class="bg-primary block float-left h-[3px] mb-[7px] w-[30px] rounded-xs"></span>
+                <span class="bg-primary block float-left h-[3px] mb-[7px] w-[15px] rounded-xs"></span>
+                <span class="bg-primary block float-left h-[3px] mb-[7px] w-[30px] rounded-xs"></span>
             </span>
         </a>
 
         <HeaderMenu />
 
         <div class="mobile-user-menu">
-            <a class="text-[#3D5EE1] p-0 block transition-colors duration-150 ease-in-out" href="#"
+            <a class="text-primary p-0 block transition-colors duration-150 ease-in-out" href="#"
                 @click="dropdownToogle = !dropdownToogle">
                 <FontAwesomeIcon icon="fa-solid fa-ellipsis-vertical" />
             </a>

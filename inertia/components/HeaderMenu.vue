@@ -72,7 +72,7 @@ import VDropdown from '~/components/floating-vue/components/Dropdown'
                             <div class="flex justify-between items-center mb-4 pb-4 border-b border-b-[#E9EDF4]">
                                 <h4 class="text-lg font-semibold text-[#202C4B]">Notifications (2)</h4>
                                 <div class="flex items-center">
-                                    <a class="text-[#3D5EE1] text-[15px] leading-none mr-4">Mark all as read</a>
+                                    <a class="text-primary text-[15px] leading-none mr-4">Mark all as read</a>
                                     <VDropdown class="relative">
                                         <a><font-awesome-icon icon="fa-regular fa-calendar" />Today</a>
 

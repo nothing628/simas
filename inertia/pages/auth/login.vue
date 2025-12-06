@@ -67,7 +67,7 @@ const getCurrentYear = () => {
                                                 <div class="text-center">
                                                     <h6 class="text-[#202C4B] mb-0 text-[15px]">Belum memiliki akun?
                                                         <a
-                                                            class="relative text-[#3D5EE1] cursor-pointer transition-all duration-500">Buat Akun</a>
+                                                            class="relative text-primary cursor-pointer transition-all duration-500">Buat Akun</a>
                                                     </h6>
                                                 </div>
                                             </div>
