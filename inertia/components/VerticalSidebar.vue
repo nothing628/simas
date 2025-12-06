@@ -73,21 +73,30 @@
                         </ul>
                     </li>
                     <li v-else class="submenu">
-                        <a href="javascript:void(0)" @click="expandSubMenus(menu)" class="flex" :class="{
-                            subdrop: menu.showSubRoute,
-                            active: route_array[1] === menu.active_link,
-                        }">
-                            <i :class="'ti ' + menu.icon"></i>
-                            <span>{{ menu.menuValue }}</span>
+                        <a href="javascript:void(0)" @click="expandSubMenus(menu)"
+                            class="flex items-center text-sm font-normal w-full relative p-2 group hover:text-primary"
+                            :class="{
+                                subdrop: menu.showSubRoute,
+                                'active text-primary bg-primary-transparent rounded-sm': route_array[1] === menu.active_link || current_active === menu.active_link,
+                                'text-semiabu': !(route_array[1] === menu.active_link || current_active === menu.active_link)
+                            }">
+                            <i class="flex items-center justify-center w-6 h-6 text-gray-700 bg-light-400 text-lg rounded-sm group-[.active]:text-primary group-[.active]:bg-white"
+                                :class="'ti ' + menu.icon"></i>
+                            <span
+                                class="ml-2.5 text-dark whitespace-nowrap text-sm font-normal group-[.active]:text-primary group-hover:text-primary">{{
+                                    menu.menuValue
+                                }}</span>
                             <span class="menu-arrow"></span>
                         </a>
-                        <ul :class="{ 'block': menu.showSubRoute, 'hidden': !menu.showSubRoute }">
+                        <ul class="mt-2.5" :class="{ 'block': menu.showSubRoute, 'hidden': !menu.showSubRoute }">
                             <li v-for="subMenu in menu.subMenus" :key="subMenu.menuValue">
-                                <a v-if="subMenu.route" :to="subMenu.route" :class="{
-                                    active:
-                                        currentPath === subMenu.active_link ||
-                                        subMenu.alternative_active_links && subMenu.alternative_active_links.includes(currentPath)
-                                }">
+                                <a v-if="subMenu.route" :href="subMenu.route"
+                                    class="flex items-center relative text-gray-600 text-sm w-full p-2 pl-10 font-normal before:content-[''] before:absolute before:w-[5px] before:h-[5px] before:rounded-full before:left-7 before:top-1/2 before:-translate-y-1/2 before:bg-light hover:text-primary"
+                                    :class="{
+                                        active:
+                                            currentPath === subMenu.active_link ||
+                                            subMenu.alternative_active_links && subMenu.alternative_active_links.includes(currentPath)
+                                    }">
                                     {{ subMenu.menuValue }}
                                 </a>
                                 <template v-else>
@@ -126,6 +135,8 @@ const side_bar_data = ref(sidebarSections)
 const openMenuItem = ref()
 const showSubRoute = ref()
 const route_array = ref<any>([])
+const current_active = ref()
+const isMounted = ref(false)
 
 const expandSubMenus = (menu: SidebarMenu) => {
     side_bar_data.value.forEach((item) => {
@@ -139,6 +150,7 @@ const expandSubMenus = (menu: SidebarMenu) => {
         }
     });
     menu.showSubRoute = !menu.showSubRoute;
+    current_active.value = menu.active_link
     // Save the state to localStorage
     localStorage.setItem("openSubMenu", JSON.stringify(side_bar_data));
 }
@@ -178,7 +190,7 @@ const restoreMenuState = () => {
 }
 
 const getCurrentPath = () => {
-    if (window && window.location) {
+    if (isMounted.value && window) {
         const currentPath = window.location.pathname
         route_array.value = currentPath.split('/')
     }
@@ -195,4 +207,5 @@ const isMenuActive = (_menu: SidebarMenu) => {
 }
 
 onMounted(restoreMenuState)
+onMounted(() => isMounted.value = true)
 </script>

@@ -6,6 +6,7 @@
 @theme {
     --font-sans: 'Roboto', sans-serif;
     --color-primary: #3D5EE1;
+    --color-primary-transparent: #F2F5FF;
     --color-dark: #202c4b;
     --color-semiabu: #6a7287;
 
@@ -255,5 +256,16 @@
     .breadcrumb-item + .breadcrumb-item {
         @apply pl-2;
         @apply before:content-['/'] before:pr-2 before:float-left before:opacity-40 before:text-semiabu;
+    }
+
+    .menu-arrow {
+        @apply flex items-center absolute top-1/2 right-2.5 rounded-full -translate-y-1/2;
+        @apply transition-all duration-200 ease-in-out w-4 h-4 leading-4 text-lg ml-2.5;
+        @apply text-dark font-normal whitespace-nowrap;
+        @apply group-[.active]:text-primary group-[.subdrop]:rotate-90;
+        @apply before:content-[''] before:absolute before:top-[5px] before:right-[5px];
+        @apply before:-rotate-45 before:w-1.5 before:h-1.5 before:border-t-0 before:border-l-0;
+        @apply before:border-r-gray-400 before:border-b-gray-400 before:border-r-2 before:border-b-2;
+        @apply group-[.active]:before:border-r-primary group-[.active]:before:border-b-primary;
     }
 }
