@@ -234,6 +234,7 @@
   .page-wrapper {
     @apply relative pt-[60px] ml-0 lg:pt-14 lg:ml-[252px] left-0;
     @apply transition-all duration-200 ease-in-out;
+    @apply group-[.mini-sidebar]/body:lg:ml-20;
   }
 
   .page-wrapper .content {
