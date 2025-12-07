@@ -228,6 +228,7 @@
     @apply group-[.mini-sidebar]/body:lg:w-20 group-[.mini-sidebar]/body:lg:overflow-hidden;
     @apply group-[.expand-menu]/body:lg:w-[252px];
     @apply group-[.expand-menu.mini-sidebar]/body:lg:block;
+    @apply group-[.slide-nav]/body:ml-0;
   }
 
   .page-wrapper {

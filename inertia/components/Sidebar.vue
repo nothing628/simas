@@ -12,7 +12,7 @@ import VerticalSidebar from './VerticalSidebar.vue';
                     <ul>
                         <li class="mb-[5px]">
                             <a href="javascript:void(0);"
-                                class="flex items-center border border-light-900 bg-white rounded p-2 mb-6">
+                                class="flex items-center border border-light-900 bg-white rounded p-2 mb-6 group-[.mini-sidebar]/body:justify-center">
                                 <img :src="'/img/logo.svg'" class="avatar avatar-md max-w-full rounded"
                                     alt="Profile" />
                                 <span class="text-dark ml-2 font-normal group-[.mini-sidebar]/body:lg:hidden group-[.mini-sidebar.expand-menu]/body:lg:inline-block">Global International</span>
