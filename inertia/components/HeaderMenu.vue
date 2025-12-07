@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import VDropdown from '~/components/floating-vue/components/Dropdown'
+import HeaderSearch from './HeaderSearch.vue';
 </script>
 
 <template>
     <div class="contents py-[15px] px-6">
         <div class="nav user-menu">
-            <div class="nav-item mr-auto"></div>
+            <HeaderSearch />
             <div class="flex items-center">
                 <VDropdown :distance="6" placement="bottom-end" class="mr-2">
                     <a class="btn btn-outline-light font-normal bg-white flex items-center p-2 hover:bg-[#E9EDF4]"
