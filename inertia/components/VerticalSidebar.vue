@@ -18,7 +18,7 @@
                             <i class="flex items-center justify-center w-6 h-6 text-gray-700 bg-light-400 text-lg rounded-sm"
                                 :class="'ti ' + menu.icon"></i>
                             <span
-                                class="ml-2.5 text-dark whitespace-nowrap text-sm font-normal group-hover:text-primary">{{
+                                class="ml-2.5 text-dark whitespace-nowrap text-sm font-normal group-[.mini-sidebar]/body:lg:hidden group-[.mini-sidebar.expand-menu]/body:lg:inline-block group-hover:text-primary">{{
                                     menu.menuValue }}</span>
                         </a>
                         <template v-else>
@@ -46,7 +46,7 @@
                                 <li v-if="!subMenus.customSubmenuTwo">
                                     <a :href="subMenus.route" @click="expandSubMenus(subMenus)">{{
                                         subMenus.menuValue
-                                        }}</a>
+                                    }}</a>
                                 </li>
                                 <template v-else-if="subMenus.customSubmenuTwo">
                                     <li class="submenu">
@@ -64,7 +64,7 @@
                                             <li v-for="subMenuTwo in subMenus.subMenusTwo" :key="subMenuTwo.menuValue">
                                                 <a :href="subMenuTwo.route">{{
                                                     subMenuTwo.menuValue
-                                                    }}</a>
+                                                }}</a>
                                             </li>
                                         </ul>
                                     </li>
@@ -83,7 +83,7 @@
                             <i class="flex items-center justify-center w-6 h-6 text-gray-700 bg-light-400 text-lg rounded-sm group-[.active]:text-primary group-[.active]:bg-white"
                                 :class="'ti ' + menu.icon"></i>
                             <span
-                                class="ml-2.5 text-dark whitespace-nowrap text-sm font-normal group-[.active]:text-primary group-hover:text-primary">{{
+                                class="ml-2.5 text-dark whitespace-nowrap text-sm font-normal group-[.mini-sidebar]/body:lg:hidden group-[.mini-sidebar.expand-menu]/body:lg:inline-block group-[.active]:text-primary group-hover:text-primary">{{
                                     menu.menuValue
                                 }}</span>
                             <span class="menu-arrow"></span>
