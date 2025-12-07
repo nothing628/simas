@@ -46,7 +46,7 @@
                                 <li v-if="!subMenus.customSubmenuTwo">
                                     <a :href="subMenus.route" @click="expandSubMenus(subMenus)">{{
                                         subMenus.menuValue
-                                    }}</a>
+                                        }}</a>
                                 </li>
                                 <template v-else-if="subMenus.customSubmenuTwo">
                                     <li class="submenu">
@@ -64,7 +64,7 @@
                                             <li v-for="subMenuTwo in subMenus.subMenusTwo" :key="subMenuTwo.menuValue">
                                                 <a :href="subMenuTwo.route">{{
                                                     subMenuTwo.menuValue
-                                                }}</a>
+                                                    }}</a>
                                             </li>
                                         </ul>
                                     </li>
@@ -128,7 +128,8 @@
 </template>
 
 <script setup lang="ts">
-import { sidebarSections, SidebarMenu } from '~/utils/sidebar-menu'
+import { sidebarSections } from '~/utils/menu'
+import type { SidebarMenu } from '~/utils/sidebar-menu'
 import { computed, onMounted, ref } from 'vue'
 
 const side_bar_data = ref(sidebarSections)

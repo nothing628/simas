@@ -10,7 +10,7 @@ const dropdownToogle = ref(true)
     <div class="header">
         <div class="header-left">
             <a class="logo logo-normal">
-                <img class="inline-block h-auto max-w-full w-[140px]" :src="'/img/logo.svg'" />
+                <img class="inline-block h-auto max-w-full w-[80px]" :src="'/img/logo.svg'" />
             </a>
             <a class="rounded-md p-1 text-lg hidden lg:flex lg:items-center lg:justify-center">
                 <FontAwesomeIcon icon="fa-solid fa-bars-staggered" />
