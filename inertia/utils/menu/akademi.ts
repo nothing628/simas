@@ -6,14 +6,25 @@ const AcademySection: SidebarSection = {
   menu: [
     {
       menuValue: 'Kelas',
-      route: '/kelas',
-      active_link: 'active',
+      route: '/admin/kelas',
+      active_link: '/admin/kelas',
       icon: 'ti-school-bell',
+      hasSubRoute: true,
+      subMenus: [
+        {
+          menuValue: "Daftar Kelas",
+          route: '/admin/kelas/list'
+        },
+        {
+          menuValue: "Jadwal Kelas",
+          route: '/admin/kelas/jadwal'
+        },
+      ]
     },
     {
       menuValue: 'Ruang Kelas',
-      route: '/rkelas',
-      active_link: 'active',
+      route: '/admin/kelas/ruang',
+      active_link: '/admin/kelas/ruang',
       icon: 'ti-building',
     },
     {
