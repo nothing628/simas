@@ -7,6 +7,40 @@
 
         <div class="page-wrapper">
             <div class="content">
+                <ContentHead>
+                    <template #left>
+                        <Breadcrumb title="Daftar Kelas"
+                            :items="[{ title: 'Dashboard', link: '/admin' }, { title: 'Kelas' }, { title: 'Daftar Kelas' }]" />
+                    </template>
+                    <template #right>
+                        <div class="pr-1 mb-2"><a class="btn btn-outline-light bg-white btn-icon mr-1"
+                                aria-label="Refresh"><i class="ti ti-refresh"></i></a>
+                        </div>
+                        <div class="pr-1 mb-2"><button type="button"
+                                class="btn btn-outline-light bg-white btn-icon mr-1" aria-label="Cetak"><i
+                                    class="ti ti-printer"></i></button>
+                        </div>
+
+                        <VDropdown :distance="6" placement="bottom-end" class="mr-2 mb-2">
+                            <a href="javascript:void(0);" class="btn btn-light font-medium inline-flex items-center"><i
+                                    class="ti ti-file-export me-2"></i>Export </a>
+
+                            <template #popper>
+                                <ul class="p-3">
+                                    <li><a href="javascript:void(0);" class="dropdown-item rounded"><i
+                                                class="ti ti-file-type-pdf me-2"></i>Export as PDF</a></li>
+                                    <li><a href="javascript:void(0);" class="dropdown-item rounded"><i
+                                                class="ti ti-file-type-xls me-2"></i>Export as Excel </a></li>
+                                </ul>
+                            </template>
+                        </VDropdown>
+                        <div class="mb-2"><a href="/vue/template/students/add-student"
+                                class="btn btn-primary flex items-center">
+                                <i class="ti ti-square-rounded-plus-filled me-2"></i>
+                                Tambah Kelas</a></div>
+                    </template>
+                </ContentHead>
+
                 Kelas List
             </div>
         </div>
@@ -17,4 +51,6 @@
 import { Head } from '@inertiajs/vue3'
 import Header from '~/components/Header.vue'
 import Sidebar from '~/components/Sidebar.vue';
+import ContentHead from '~/components/ContentHead.vue';
+import Breadcrumb from '~/components/Breadcrumb.vue';
 </script>

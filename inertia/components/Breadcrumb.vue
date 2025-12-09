@@ -1,21 +1,27 @@
 <template>
-    <h3 class="text-xl text-dark font-semibold page-title mb-1">Students</h3>
+    <h3 class="text-xl text-dark font-semibold page-title mb-1">{{ title }}</h3>
     <nav>
         <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item"><a href="/" class="">Dashboard</a></li>
-            <li class="breadcrumb-item">Students</li>
-            <li class="breadcrumb-item active" aria-current="page">Students Grid</li>
+            <li class="breadcrumb-item" v-for="(item, i) in items" :class="{ 'active': i == items.length - 1 }">
+                <template v-if="item.link">
+                    <a :href="item.link">{{ item.title
+                    }}</a>
+                </template>
+                <template v-else>
+                    {{ item.title }}
+                </template>
+            </li>
         </ol>
     </nav>
 </template>
 <script setup lang="ts">
 const props = defineProps({
-    headTitle: {
+    title: {
         type: String,
         default: ""
     },
     items: {
-        type: Array,
+        type: Array<any>,
         default: () => ([])
     }
 })
