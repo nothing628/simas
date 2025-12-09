@@ -41,7 +41,10 @@
                     </template>
                 </ContentHead>
 
-                Kelas List
+                <div class="card">
+                    <FilterKelas />
+                    Kelas List
+                </div>
             </div>
         </div>
     </div>
@@ -53,4 +56,5 @@ import Header from '~/components/Header.vue'
 import Sidebar from '~/components/Sidebar.vue';
 import ContentHead from '~/components/ContentHead.vue';
 import Breadcrumb from '~/components/Breadcrumb.vue';
+import FilterKelas from '~/components/kelas/FilterKelas.vue';
 </script>
