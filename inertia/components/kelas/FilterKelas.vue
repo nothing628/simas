@@ -9,44 +9,48 @@
                 <input type="text" class="form-control date-range bookingrange" placeholder="Select"
                     value="Academic Year : 2024 / 2025" ref="dateRangeInput" />
             </div>
-            <div class="dropdown mb-3 me-2">
+            <VDropdown class="mb-4 mr-2">
                 <a href="javascript:void(0);" class="btn btn-outline-light bg-white dropdown-toggle"
                     data-bs-toggle="dropdown" data-bs-auto-close="outside"><i class="ti ti-filter me-2"></i>Filter</a>
-                <div class="dropdown-menu drop-width">
-                    <form>
-                        <div class="flex items-center border-bottom p-3">
-                            <h4>Filter</h4>
-                        </div>
-                        <div class="p-3 border-bottom pb-0">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <label class="form-label">Class</label>
-                                        <VueSelect :options="ClasSelecOne" v-model="selected" placeholder="Select" />
+                <template #popper>
+                    <div class="dropdown-menu drop-width">
+                        <form>
+                            <div class="flex items-center border-bottom p-3">
+                                <h4>Filter</h4>
+                            </div>
+                            <div class="p-3 border-bottom pb-0">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label class="form-label">Class</label>
+                                            <VueSelect :options="ClasSelecOne" v-model="selected"
+                                                placeholder="Select" />
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <label class="form-label">Section</label>
-                                        <VueSelect :options="ClassSece" v-model="selectedOne" placeholder="Select" />
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label class="form-label">Section</label>
+                                            <VueSelect :options="ClassSece" v-model="selectedOne"
+                                                placeholder="Select" />
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-md-12">
-                                    <div class="mb-3">
-                                        <label class="form-label">Status</label>
-                                        <VueSelect :options="SeleSts" v-model="selectedTwo" placeholder="Select" />
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label class="form-label">Status</label>
+                                            <VueSelect :options="SeleSts" v-model="selectedTwo" placeholder="Select" />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="p-3 d-flex align-items-center justify-content-end">
-                            <a href="javascript:void(0);" class="btn btn-light me-3">Reset</a>
-                            <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Apply</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <VDropdown class="mb-3">
+                            <div class="p-3 d-flex align-items-center justify-content-end">
+                                <a href="javascript:void(0);" class="btn btn-light me-3">Reset</a>
+                                <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Apply</button>
+                            </div>
+                        </form>
+                    </div>
+                </template>
+            </VDropdown>
+            <VDropdown class="mb-4">
                 <a href="javascript:void(0);" class="btn btn-outline-light bg-white dropdown-toggle"
                     data-bs-toggle="dropdown"><i class="ti ti-sort-ascending-2 me-2"></i>Sort by A-Z
                 </a>
@@ -77,9 +81,12 @@
 </template>
 
 <script setup lang="ts">
+import '../daterangepicker/daterangepicker.css';
+import '../daterangepicker/daterangepicker'
 import VueSelect from '../vue-select';
 import { Dropdown as VDropdown } from '../floating-vue'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
+import moment from 'moment'
 
 const ClasSelecOne = ref([
     { label: "I", value: "I" },
@@ -100,4 +107,34 @@ const SeleSts = ref([
 const selected = ref([])
 const selectedOne = ref([])
 const selectedTwo = ref([])
+const dateRangeInput = ref()
+
+onMounted(() => {
+    if (dateRangeInput.value) {
+        const start = moment().subtract(6, "days");
+        const end = moment();
+
+        new DateRangePicker(
+            dateRangeInput.value,
+            {
+                startDate: start,
+                endDate: end,
+                ranges: {
+                    Today: [moment(), moment()],
+                    Yesterday: [moment().subtract(1, "days"), moment().subtract(1, "days")],
+                    "Last 7 Days": [moment().subtract(6, "days"), moment()],
+                    "Last 30 Days": [moment().subtract(29, "days"), moment()],
+                    "This Month": [moment().startOf("month"), moment().endOf("month")],
+                    "Last Month": [
+                        moment().subtract(1, "month").startOf("month"),
+                        moment().subtract(1, "month").endOf("month"),
+                    ],
+                },
+            },
+            booking_range
+        );
+
+        booking_range(start, end);
+    }
+})
 </script>
