@@ -4,7 +4,8 @@ import moment, { Moment } from 'moment'
 type JqueryInstance = JQuery<HTMLElement>
 type JquerySelector = JQuery.htmlString | JQuery.Selector
 type DropDirection = 'down' | 'up' | 'auto'
-type OpenDirection = 'right' | 'left'
+type OpenDirection = 'right' | 'left' | 'center'
+type SideDirection = 'right' | 'left'
 type LocaleDirection = 'ltr' | 'rtl'
 type CalendarTable = Record<string | number, Array<Moment>>
 type Calendar = {
@@ -78,7 +79,7 @@ export type DateRangePickerCallback = (start: Moment, end: Moment, chosenLabel?:
 export type DateRange = [moment.Moment, moment.Moment]
 
 class DateRangePicker {
-  parentEl: JquerySelector | JqueryInstance
+  parentEl: JqueryInstance
   container: JqueryInstance
   maxDate?: moment.Moment
   minDate?: moment.Moment
@@ -89,7 +90,7 @@ class DateRangePicker {
   autoApply: boolean
   singleDatePicker: boolean
   showDropdowns: boolean
-  endDate: Moment
+  endDate: Moment | null
   startDate: Moment
   element: JqueryInstance
   minYear: number
@@ -123,11 +124,11 @@ class DateRangePicker {
   rightCalendar: Calendar
 
   constructor(
-    element: JQuery.htmlString | JQuery.Selector,
-    options: DateRangePickerOptions,
-    cb: DateRangePickerCallback
+    element: JQuery<HTMLElement> | HTMLElement,
+    options?: DateRangePickerOptions,
+    cb?: DateRangePickerCallback
   ) {
-    this.parentEl = 'body'
+    this.parentEl = $('body')
     this.element = $(element)
     this.startDate = moment().startOf('day')
     this.endDate = moment().endOf('day')
@@ -181,7 +182,7 @@ class DateRangePicker {
     this.rightCalendar = {}
 
     //custom options from user
-    if (typeof options !== 'object' || options === null) options = {}
+    if (typeof options === 'undefined') options = {}
 
     //allow setting options with data attributes
     //data-api options will be overwritten with custom javascript options
@@ -465,11 +466,11 @@ class DateRangePicker {
 
     this.container
       .find('.drp-calendar')
-      .on('click.daterangepicker', '.prev', $.proxy(this.clickPrev, this))
-      .on('click.daterangepicker', '.next', $.proxy(this.clickNext, this))
-      .on('mousedown.daterangepicker', 'td.available', $.proxy(this.clickDate, this))
-      .on('mouseenter.daterangepicker', 'td.available', $.proxy(this.hoverDate, this))
-      .on('change.daterangepicker', 'select.yearselect', $.proxy(this.monthOrYearChanged, this))
+      .on('click.daterangepicker', '.prev', this.clickPrev.bind(this))
+      .on('click.daterangepicker', '.next', this.clickNext.bind(this))
+      .on('mousedown.daterangepicker', 'td.available', this.clickDate.bind(this))
+      .on('mouseenter.daterangepicker', 'td.available', this.hoverDate.bind(this))
+      .on('change.daterangepicker', 'select.yearselect', this.monthOrYearChanged.bind(this))
       .on('change.daterangepicker', 'select.monthselect', this.monthOrYearChanged.bind(this))
       .on(
         'change.daterangepicker',
@@ -477,23 +478,23 @@ class DateRangePicker {
         this.timeChanged.bind(this)
       )
 
-    this.container.find('.ranges').on('click.daterangepicker', 'li', $.proxy(this.clickRange, this))
+    this.container.find('.ranges').on('click.daterangepicker', 'li', this.clickRange.bind(this))
 
     this.container
       .find('.drp-buttons')
-      .on('click.daterangepicker', 'button.applyBtn', $.proxy(this.clickApply, this))
-      .on('click.daterangepicker', 'button.cancelBtn', $.proxy(this.clickCancel, this))
+      .on('click.daterangepicker', 'button.applyBtn', this.clickApply.bind(this))
+      .on('click.daterangepicker', 'button.cancelBtn', this.clickCancel.bind(this))
 
     if (this.element.is('input') || this.element.is('button')) {
       this.element.on({
-        'click.daterangepicker': $.proxy(this.show, this),
-        'focus.daterangepicker': $.proxy(this.show, this),
-        'keyup.daterangepicker': $.proxy(this.elementChanged, this),
-        'keydown.daterangepicker': $.proxy(this.keydown, this), //IE 11 compatibility
+        'click.daterangepicker': this.show.bind(this),
+        'focus.daterangepicker': this.show.bind(this),
+        'keyup.daterangepicker': this.elementChanged.bind(this),
+        'keydown.daterangepicker': this.keydown.bind(this),
       })
     } else {
-      this.element.on('click.daterangepicker', $.proxy(this.toggle, this))
-      this.element.on('keydown.daterangepicker', $.proxy(this.toggle, this))
+      this.element.on('click.daterangepicker', this.toggle.bind(this))
+      this.element.on('keydown.daterangepicker', this.toggle.bind(this))
     }
 
     //
@@ -543,28 +544,28 @@ class DateRangePicker {
       else this.endDate = moment(endDate)
     }
 
-    if (!this.timePicker) this.endDate = this.endDate.endOf('day')
+    if (!this.timePicker) this.endDate = this.endDate!.endOf('day')
 
     if (this.timePicker && this.timePickerIncrement)
-      this.endDate.minute(
-        Math.round(this.endDate.minute() / this.timePickerIncrement) * this.timePickerIncrement
+      this.endDate!.minute(
+        Math.round(this.endDate!.minute() / this.timePickerIncrement) * this.timePickerIncrement
       )
 
-    if (this.endDate.isBefore(this.startDate)) this.endDate = this.startDate.clone()
+    if (this.endDate!.isBefore(this.startDate)) this.endDate = this.startDate.clone()
 
-    if (this.maxDate && this.endDate.isAfter(this.maxDate)) this.endDate = this.maxDate.clone()
+    if (this.maxDate && this.endDate!.isAfter(this.maxDate)) this.endDate = this.maxDate.clone()
 
     if (this.maxSpan && this.startDate.clone().add(this.maxSpan).isBefore(this.endDate))
       this.endDate = this.startDate.clone().add(this.maxSpan)
 
-    this.previousRightTime = this.endDate.clone()
+    this.previousRightTime = this.endDate!.clone()
 
     this.container
       .find('.drp-selected')
       .html(
         this.startDate.format(this.locale.format) +
           this.locale.separator +
-          this.endDate.format(this.locale.format)
+          this.endDate!.format(this.locale.format)
       )
 
     if (!this.isShowing) this.updateElement()
@@ -705,7 +706,7 @@ class DateRangePicker {
     this.calculateChosenLabel()
   }
 
-  renderCalendar(side: OpenDirection) {
+  renderCalendar(side: SideDirection) {
     //
     // Build the matrix of dates that will populate the calendar
     //
@@ -944,8 +945,7 @@ class DateRangePicker {
         //apply custom classes for this date
         const isCustom = this.isCustomDate(calendarTable[row][col])
         if (isCustom !== false) {
-          if (typeof isCustom === 'string') classes.push(isCustom)
-          else Array.prototype.push.apply(classes, isCustom )
+          classes.push(isCustom)
         }
 
         var cname = '',
@@ -977,7 +977,7 @@ class DateRangePicker {
     this.container.find('.drp-calendar.' + side + ' .calendar-table').html(html)
   }
 
-  renderTimePicker(side: OpenDirection) {
+  renderTimePicker(side: SideDirection) {
     // Don't bother updating the time picker if it's currently disabled
     // because an end date hasn't been clicked yet
     if (side == 'right' && !this.endDate) return
@@ -997,7 +997,7 @@ class DateRangePicker {
       selected = this.startDate.clone()
       minDate = this.minDate
     } else if (side == 'right') {
-      selected = this.endDate.clone()
+      selected = this.endDate!.clone()
       minDate = this.startDate
 
       //Preserve the time already selected
@@ -1170,28 +1170,28 @@ class DateRangePicker {
       containerTop,
       drops = this.drops
 
-    var parentRightEdge = $(window).width()
+    let parentRightEdge = $(window).width() || 0
     if (!this.parentEl.is('body')) {
       parentOffset = {
-        top: this.parentEl.offset().top - this.parentEl.scrollTop(),
-        left: this.parentEl.offset().left - this.parentEl.scrollLeft(),
+        top: this.parentEl.offset()!.top - (this.parentEl.scrollTop() || 0),
+        left: this.parentEl.offset()!.left - (this.parentEl.scrollLeft() || 0),
       }
-      parentRightEdge = this.parentEl[0].clientWidth + this.parentEl.offset().left
+      parentRightEdge = this.parentEl[0].clientWidth + this.parentEl.offset()!.left
     }
 
     switch (drops) {
       case 'auto':
-        containerTop = this.element.offset().top + this.element.outerHeight() - parentOffset.top
-        if (containerTop + this.container.outerHeight() >= this.parentEl[0].scrollHeight) {
-          containerTop = this.element.offset().top - this.container.outerHeight() - parentOffset.top
+        containerTop = this.element.offset()!.top + (this.element.outerHeight() || 0) - parentOffset.top
+        if (containerTop + (this.container.outerHeight() || 0) >= this.parentEl[0].scrollHeight) {
+          containerTop = this.element.offset()!.top - (this.container.outerHeight() || 0) - parentOffset.top
           drops = 'up'
         }
         break
       case 'up':
-        containerTop = this.element.offset().top - this.container.outerHeight() - parentOffset.top
+        containerTop = this.element.offset()!.top - (this.container.outerHeight() || 0) - parentOffset.top
         break
       default:
-        containerTop = this.element.offset().top + this.element.outerHeight() - parentOffset.top
+        containerTop = this.element.offset()!.top + (this.element.outerHeight() || 0) - parentOffset.top
         break
     }
 
@@ -1201,13 +1201,13 @@ class DateRangePicker {
       left: 0,
       right: 'auto',
     })
-    var containerWidth = this.container.outerWidth()
+    const containerWidth = this.container.outerWidth() || 0
 
     this.container.toggleClass('drop-up', drops == 'up')
 
     if (this.opens == 'left') {
-      var containerRight = parentRightEdge - this.element.offset().left - this.element.outerWidth()
-      if (containerWidth + containerRight > $(window).width()) {
+      var containerRight = parentRightEdge - this.element.offset()!.left - (this.element.outerWidth() || 0)
+      if (containerWidth + containerRight > ($(window).width() || 0)) {
         this.container.css({
           top: containerTop,
           right: 'auto',
@@ -1222,9 +1222,9 @@ class DateRangePicker {
       }
     } else if (this.opens == 'center') {
       var containerLeft =
-        this.element.offset().left -
+        this.element.offset()!.left -
         parentOffset.left +
-        this.element.outerWidth() / 2 -
+        (this.element.outerWidth() || 0) / 2 -
         containerWidth / 2
       if (containerLeft < 0) {
         this.container.css({
@@ -1232,7 +1232,7 @@ class DateRangePicker {
           right: 'auto',
           left: 9,
         })
-      } else if (containerLeft + containerWidth > $(window).width()) {
+      } else if (containerLeft + containerWidth > ($(window).width() || 0)) {
         this.container.css({
           top: containerTop,
           left: 'auto',
@@ -1246,8 +1246,8 @@ class DateRangePicker {
         })
       }
     } else {
-      var containerLeft = this.element.offset().left - parentOffset.left
-      if (containerLeft + containerWidth > $(window).width()) {
+      var containerLeft = this.element.offset()!.left - parentOffset.left
+      if (containerLeft + containerWidth > ($(window).width() || 0)) {
         this.container.css({
           top: containerTop,
           left: 'auto',
@@ -1283,8 +1283,8 @@ class DateRangePicker {
     $(window).on('resize.daterangepicker', this.move.bind(this))
 
     this.oldStartDate = this.startDate.clone()
-    this.oldEndDate = this.endDate.clone()
-    this.previousRightTime = this.endDate.clone()
+    this.oldEndDate = this.endDate!.clone()
+    this.previousRightTime = this.endDate!.clone()
 
     this.updateView()
     this.container.show()
@@ -1336,7 +1336,7 @@ class DateRangePicker {
       target.closest('.calendar-table').length
     )
       return
-    this.hide()
+    this.hide(e)
     this.element.trigger('outsideClick.daterangepicker', this)
   }
 
@@ -1504,13 +1504,13 @@ class DateRangePicker {
       this.setEndDate(date.clone())
       if (this.autoApply) {
         this.calculateChosenLabel()
-        this.clickApply()
+        this.clickApply(e)
       }
     }
 
     if (this.singleDatePicker) {
       this.setEndDate(this.startDate)
-      if (!this.timePicker && this.autoApply) this.clickApply()
+      if (!this.timePicker && this.autoApply) this.clickApply(e)
     }
 
     this.updateView()
@@ -1528,7 +1528,7 @@ class DateRangePicker {
         //ignore times when comparing dates if time picker seconds is not enabled
         if (
           this.startDate.format(format) == this.ranges[range][0].format(format) &&
-          this.endDate.format(format) == this.ranges[range][1].format(format)
+          this.endDate!.format(format) == this.ranges[range][1].format(format)
         ) {
           customRange = false
           this.chosenLabel = this.container
@@ -1541,7 +1541,7 @@ class DateRangePicker {
         //ignore times when comparing dates if time picker is not enabled
         if (
           this.startDate.format('YYYY-MM-DD') == this.ranges[range][0].format('YYYY-MM-DD') &&
-          this.endDate.format('YYYY-MM-DD') == this.ranges[range][1].format('YYYY-MM-DD')
+          this.endDate!.format('YYYY-MM-DD') == this.ranges[range][1].format('YYYY-MM-DD')
         ) {
           customRange = false
           this.chosenLabel = this.container
@@ -1684,9 +1684,9 @@ class DateRangePicker {
 
   elementChanged() {
     if (!this.element.is('input')) return
-    if (!this.element.val().length) return
+    if (!(this.element.val() as string).length) return
 
-    var dateString = this.element.val().split(this.locale.separator),
+    var dateString = (this.element.val() as string).split(this.locale.separator),
       start = null,
       end = null
 
@@ -1709,12 +1709,12 @@ class DateRangePicker {
 
   keydown(e: KeyboardEvent) {
     //hide on tab or enter
-    if (e.code === "Tab" || e.code === "Enter") {
+    if (e.code === 'Tab' || e.code === 'Enter') {
       this.hide(e)
     }
 
     //hide on esc and prevent propagation
-    if (e.code === "Escape") {
+    if (e.code === 'Escape') {
       e.preventDefault()
       e.stopPropagation()
 
@@ -1726,7 +1726,7 @@ class DateRangePicker {
     if (this.element.is('input') && this.autoUpdateInput) {
       var newValue = this.startDate.format(this.locale.format)
       if (!this.singleDatePicker) {
-        newValue += this.locale.separator + this.endDate.format(this.locale.format)
+        newValue += this.locale.separator + this.endDate!.format(this.locale.format)
       }
       if (newValue !== this.element.val()) {
         this.element.val(newValue).trigger('change')
@@ -1741,17 +1741,16 @@ class DateRangePicker {
   }
 }
 
-$.fn.daterangepicker = function (
-  options?: DateRangePickerOptions,
-  callback?: DateRangePickerCallback
-) {
-  var implementOptions = $.extend(true, {}, $.fn.daterangepicker.defaultOptions, options)
-  this.each(function () {
-    var el = $(this)
-    if (el.data('daterangepicker')) el.data('daterangepicker').remove()
-    el.data('daterangepicker', new DateRangePicker(el, implementOptions, callback))
-  })
-  return this
-}
+// $.fn.daterangepicker = function (
+//   options?: DateRangePickerOptions,
+//   callback?: DateRangePickerCallback
+// ) {
+//   this.each(function () {
+//     var el = $(this)
+//     if (el.data('daterangepicker')) el.data('daterangepicker').remove()
+//     el.data('daterangepicker', new DateRangePicker(el, options, callback))
+//   })
+//   return this
+// }
 
 export default DateRangePicker

@@ -1,76 +1,3 @@
-<template>
-    <div ref="container" dir="auto" class="vue-select"
-        :class="[{ open: menuOpen, typing: menuOpen && search.length > 0, disabled: isDisabled }, props.classes?.container]"
-        :data-state="menuOpen ? 'open' : 'closed'">
-        <div class="control" :class="[{ focused: menuOpen, disabled: props.isDisabled }, props.classes?.control]"
-            @click="handleControlClick($event)">
-            <div :id="`vue-select-${uid}-combobox`" class="value-container"
-                :class="[{ 'multi': isMulti, 'has-value': selectedOptions.length > 0 }, props.classes?.valueContainer]"
-                role="combobox" :aria-expanded="menuOpen" :aria-describedby="placeholder"
-                :aria-description="placeholder" :aria-labelledby="aria?.labelledby"
-                :aria-label="selectedOptions.length ? selectedOptions.map(getOptionLabel).join(', ') : ''"
-                :aria-required="aria?.required" :aria-owns="`vue-select-${uid}-listbox`"
-                :aria-controls="`vue-select-${uid}-listbox`" aria-haspopup="true">
-                <template v-if="!selectedOptions[0] && !search.length">
-                    <Placeholder :text="placeholder" :placeholder-slot="slots.placeholder"
-                        :class="props.classes?.placeholder" />
-                </template>
-
-                <div v-else-if="!props.isMulti && selectedOptions[0]" class="single-value"
-                    :class="[props.classes?.singleValue]" @click="openMenu()">
-                    <template v-if="slots.value">
-                        <component :is="slots.value" :option="selectedOptions[0]" />
-                    </template>
-
-                    <template v-else>
-                        {{ getOptionLabel(selectedOptions[0]) }}
-                    </template>
-                </div>
-
-                <template v-for="selectedOption in selectedOptions" v-else-if="props.isMulti && selectedOptions.length"
-                    :key="selectedOption.value">
-                    <template v-if="slots.tag">
-                        <!-- eslint-disable vue/attribute-hyphenation -->
-                        <component :is="slots.tag" :option="selectedOption"
-                            :removeOption="() => removeOption(selectedOption)" />
-                        <!-- eslint-enable vue/attribute-hyphenation -->
-                    </template>
-
-                    <MultiValue v-else :label="getOptionLabel(selectedOption)" :option="selectedOption"
-                        :tag-content-slot="slots['tag-content']" :classes="{
-                            multiValue: props.classes?.multiValue,
-                            multiValueLabel: props.classes?.multiValueLabel,
-                            multiValueRemove: props.classes?.multiValueRemove,
-                        }" @remove="removeOption(selectedOption)" />
-                </template>
-
-                <div class="input-container"
-                    :class="[{ typing: menuOpen && search.length > 0 }, props.classes?.inputContainer]"
-                    :data-value="search">
-                    <input :id="inputId" ref="input" v-model="search" class="search-input"
-                        :class="props.classes?.searchInput" v-bind="inputAttributes" aria-autocomplete="list"
-                        :aria-labelledby="`vue-select-${uid}-combobox`" :disabled="isDisabled" placeholder=""
-                        @mousedown="handleInputMousedown" @keydown="handleInputKeydown" @blur="handleInputBlur">
-                </div>
-            </div>
-
-            <Indicators ref="indicators" :has-selected-option="selectedOptions.length > 0" :is-menu-open="menuOpen"
-                :is-clearable="isClearable" :is-loading="isLoading" :is-disabled="isDisabled"
-                :slots="{ clear: slots.clear, dropdown: slots.dropdown, loading: slots.loading }" @clear="clear"
-                @toggle="toggleMenu" />
-        </div>
-
-        <Teleport :to="teleport" :disabled="!teleport" :defer="true">
-            <Menu v-if="menuOpen" v-model="selected" :root-class="rootClass" :slots="{
-                'option': slots.option,
-                'menu-header': slots['menu-header'],
-                'no-options': slots['no-options'],
-                'taggable-no-options': slots['taggable-no-options'],
-            }" />
-        </Teleport>
-    </div>
-</template>
-
 <script setup lang="ts" generic="GenericOption extends Option<OptionValue>, OptionValue = string">
 import type { HTMLAttributes } from "vue";
 import type { Option } from "./types/option";
@@ -106,7 +33,7 @@ const props = withDefaults(
         disableInvalidVModelWarn: false,
         inputAttrs: undefined,
         selectOnBlur: true,
-        filterBy: (option: GenericOption, label: string, search: string) => label.toLowerCase().includes(search.toLowerCase()),
+        filterBy: (_: GenericOption, label: string, search: string) => label.toLowerCase().includes(search.toLowerCase()),
         getOptionValue: (option: GenericOption) => option.value,
         getOptionLabel: (option: GenericOption) => option.label,
     },
@@ -440,6 +367,79 @@ watch(
     { immediate: true },
 );
 </script>
+
+<template>
+    <div ref="container" dir="auto" class="vue-select"
+        :class="[{ open: menuOpen, typing: menuOpen && search.length > 0, disabled: isDisabled }, props.classes?.container]"
+        :data-state="menuOpen ? 'open' : 'closed'">
+        <div class="control" :class="[{ focused: menuOpen, disabled: props.isDisabled }, props.classes?.control]"
+            @click="handleControlClick($event)">
+            <div :id="`vue-select-${uid}-combobox`" class="value-container"
+                :class="[{ 'multi': isMulti, 'has-value': selectedOptions.length > 0 }, props.classes?.valueContainer]"
+                role="combobox" :aria-expanded="menuOpen" :aria-describedby="placeholder"
+                :aria-description="placeholder" :aria-labelledby="aria?.labelledby"
+                :aria-label="selectedOptions.length ? selectedOptions.map(getOptionLabel).join(', ') : ''"
+                :aria-required="aria?.required" :aria-owns="`vue-select-${uid}-listbox`"
+                :aria-controls="`vue-select-${uid}-listbox`" aria-haspopup="true">
+                <template v-if="!selectedOptions[0] && !search.length">
+                    <Placeholder :text="placeholder" :placeholder-slot="slots.placeholder"
+                        :class="props.classes?.placeholder" />
+                </template>
+
+                <div v-else-if="!props.isMulti && selectedOptions[0]" class="single-value"
+                    :class="[props.classes?.singleValue]" @click="openMenu()">
+                    <template v-if="slots.value">
+                        <component :is="slots.value" :option="selectedOptions[0]" />
+                    </template>
+
+                    <template v-else>
+                        {{ getOptionLabel(selectedOptions[0]) }}
+                    </template>
+                </div>
+
+                <template v-for="selectedOption in selectedOptions" v-else-if="props.isMulti && selectedOptions.length"
+                    :key="selectedOption.value">
+                    <template v-if="slots.tag">
+                        <!-- eslint-disable vue/attribute-hyphenation -->
+                        <component :is="slots.tag" :option="selectedOption"
+                            :removeOption="() => removeOption(selectedOption)" />
+                        <!-- eslint-enable vue/attribute-hyphenation -->
+                    </template>
+
+                    <MultiValue v-else :label="getOptionLabel(selectedOption)" :option="selectedOption"
+                        :tag-content-slot="slots['tag-content']" :classes="{
+                            multiValue: props.classes?.multiValue,
+                            multiValueLabel: props.classes?.multiValueLabel,
+                            multiValueRemove: props.classes?.multiValueRemove,
+                        }" @remove="removeOption(selectedOption)" />
+                </template>
+
+                <div class="input-container"
+                    :class="[{ typing: menuOpen && search.length > 0 }, props.classes?.inputContainer]"
+                    :data-value="search">
+                    <input :id="inputId" ref="input" v-model="search" class="search-input"
+                        :class="props.classes?.searchInput" v-bind="inputAttributes" aria-autocomplete="list"
+                        :aria-labelledby="`vue-select-${uid}-combobox`" :disabled="isDisabled" placeholder=""
+                        @mousedown="handleInputMousedown" @keydown="handleInputKeydown" @blur="handleInputBlur">
+                </div>
+            </div>
+
+            <Indicators ref="indicators" :has-selected-option="selectedOptions.length > 0" :is-menu-open="menuOpen"
+                :is-clearable="isClearable" :is-loading="isLoading" :is-disabled="isDisabled"
+                :slots="{ clear: slots.clear, dropdown: slots.dropdown, loading: slots.loading }" @clear="clear"
+                @toggle="toggleMenu" />
+        </div>
+
+        <Teleport :to="teleport" :disabled="!teleport" :defer="true">
+            <Menu v-if="menuOpen" v-model="selected" :root-class="rootClass" :slots="{
+                'option': slots.option,
+                'menu-header': slots['menu-header'],
+                'no-options': slots['no-options'],
+                'taggable-no-options': slots['taggable-no-options'],
+            }" />
+        </Teleport>
+    </div>
+</template>
 
 <style>
 :root {

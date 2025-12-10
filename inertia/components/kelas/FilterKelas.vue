@@ -86,7 +86,8 @@ import '../daterangepicker/daterangepicker'
 import VueSelect from '../vue-select';
 import { Dropdown as VDropdown } from '../floating-vue'
 import { onMounted, ref } from 'vue'
-import moment from 'moment'
+import moment, { Moment } from 'moment'
+import DateRangePicker from '../daterangepicker/daterangepicker'
 
 const ClasSelecOne = ref([
     { label: "I", value: "I" },
@@ -96,18 +97,22 @@ const ClasSelecOne = ref([
 const ClassSece = ref([
     { label: "Select", value: "Select" },
     { label: "A", value: "A" },
-    { label: "B", vblue: "B" },
-    { label: "C", vblue: "C" },
+    { label: "B", value: "B" },
+    { label: "C", value: "C" },
 ])
 const SeleSts = ref([
     { label: "Select", value: "Select" },
     { label: "Active", value: "Active" },
     { label: "Inactive", value: "Inactive" },
 ])
-const selected = ref([])
-const selectedOne = ref([])
-const selectedTwo = ref([])
+const selected = ref<string[]>([])
+const selectedOne = ref<string[]>([])
+const selectedTwo = ref<string[]>([])
 const dateRangeInput = ref()
+
+const booking_range = (start: Moment, end: Moment) => {
+    return start.format("M/D/YYYY") + " - " + end.format("M/D/YYYY");
+}
 
 onMounted(() => {
     if (dateRangeInput.value) {
