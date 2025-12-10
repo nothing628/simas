@@ -1,6 +1,5 @@
 import $ from 'jquery'
 import moment, { Moment } from 'moment'
-import type {} from 'jquery'
 
 type JqueryInstance = JQuery<HTMLElement>
 type JquerySelector = JQuery.htmlString | JQuery.Selector
@@ -99,404 +98,433 @@ export type DateRangePickerInstance = {
   locale: DateRangeLocale
 }
 
-var DateRangePicker = function (
-  this: DateRangePickerInstance,
-  element: JQuery.htmlString | JQuery.Selector,
-  options: DateRangePickerOptions,
-  cb
-) {
-  //default settings for options
-  this.parentEl = 'body'
-  this.element = $(element)
-  this.startDate = moment().startOf('day')
-  this.endDate = moment().endOf('day')
-  this.maxSpan = false
-  this.autoApply = false
-  this.singleDatePicker = false
-  this.showDropdowns = false
-  this.minYear = parseInt(moment().subtract(100, 'year').format('YYYY'))
-  this.maxYear = parseInt(moment().add(100, 'year').format('YYYY'))
-  this.showWeekNumbers = false
-  this.showISOWeekNumbers = false
-  this.showCustomRangeLabel = true
-  this.timePicker = false
-  this.timePicker24Hour = false
-  this.timePickerIncrement = 1
-  this.timePickerSeconds = false
-  this.linkedCalendars = true
-  this.autoUpdateInput = true
-  this.alwaysShowCalendars = false
-  this.ranges = {}
+export type DateRangePickerCallback = () => any
 
-  this.opens = 'right'
-  if (this.element.hasClass('pull-right')) this.opens = 'left'
+class DateRangePicker {
+  parentEl: JquerySelector | JqueryInstance
+  container: JqueryInstance
+  maxDate?: moment.Moment
+  minDate?: moment.Moment
+  maxSpan: boolean
+  autoApply: boolean
+  singleDatePicker: boolean
+  showDropdowns: boolean
+  endDate: Moment
+  startDate: Moment
+  element: JqueryInstance
+  minYear: number
+  maxYear: number
+  showWeekNumbers: boolean
+  showISOWeekNumbers: boolean
+  showCustomRangeLabel: boolean
+  timePicker: boolean
+  timePicker24Hour: boolean
+  timePickerSeconds: boolean
+  timePickerIncrement: number
+  linkedCalendars: boolean
+  autoUpdateInput: boolean
+  alwaysShowCalendars: boolean
+  opens: OpenDirection
+  drops: DropDirection
+  buttonClasses: string
+  cancelButtonClasses: string
+  applyButtonClasses: string
+  isShowing: boolean
+  locale: DateRangeLocale
 
-  this.drops = 'down'
-  if (this.element.hasClass('dropup')) this.drops = 'up'
+  constructor(
+    element: JQuery.htmlString | JQuery.Selector,
+    options: DateRangePickerOptions,
+    cb: DateRangePickerCallback
+  ) {
+    this.parentEl = 'body'
+    this.element = $(element)
+    this.startDate = moment().startOf('day')
+    this.endDate = moment().endOf('day')
+    this.maxSpan = false
+    this.autoApply = false
+    this.singleDatePicker = false
+    this.showDropdowns = false
+    this.minYear = parseInt(moment().subtract(100, 'year').format('YYYY'))
+    this.maxYear = parseInt(moment().add(100, 'year').format('YYYY'))
+    this.showWeekNumbers = false
+    this.showISOWeekNumbers = false
+    this.showCustomRangeLabel = true
+    this.timePicker = false
+    this.timePicker24Hour = false
+    this.timePickerIncrement = 1
+    this.timePickerSeconds = false
+    this.linkedCalendars = true
+    this.autoUpdateInput = true
+    this.alwaysShowCalendars = false
+    this.ranges = {}
 
-  this.buttonClasses = 'btn btn-sm'
-  this.applyButtonClasses = 'btn-primary'
-  this.cancelButtonClasses = 'btn-default'
+    this.opens = 'right'
+    if (this.element.hasClass('pull-right')) this.opens = 'left'
 
-  this.locale = {
-    direction: 'ltr',
-    format: moment.localeData().longDateFormat('L'),
-    separator: ' - ',
-    applyLabel: 'Apply',
-    cancelLabel: 'Cancel',
-    weekLabel: 'W',
-    customRangeLabel: 'Custom Range',
-    daysOfWeek: moment.weekdaysMin(),
-    monthNames: moment.monthsShort(),
-    firstDay: moment.localeData().firstDayOfWeek(),
-  }
+    this.drops = 'down'
+    if (this.element.hasClass('dropup')) this.drops = 'up'
 
-  this.callback = function () {}
+    this.buttonClasses = 'btn btn-sm'
+    this.applyButtonClasses = 'btn-primary'
+    this.cancelButtonClasses = 'btn-default'
 
-  //some state information
-  this.isShowing = false
-  this.leftCalendar = {}
-  this.rightCalendar = {}
-
-  //custom options from user
-  if (typeof options !== 'object' || options === null) options = {}
-
-  //allow setting options with data attributes
-  //data-api options will be overwritten with custom javascript options
-  options = $.extend(this.element.data(), options)
-
-  //html template for the picker UI
-  if (!options.template)
-    options.template =
-      '<div class="daterangepicker">' +
-      '<div class="ranges"></div>' +
-      '<div class="drp-calendar left">' +
-      '<div class="calendar-table"></div>' +
-      '<div class="calendar-time"></div>' +
-      '</div>' +
-      '<div class="drp-calendar right">' +
-      '<div class="calendar-table"></div>' +
-      '<div class="calendar-time"></div>' +
-      '</div>' +
-      '<div class="drp-buttons">' +
-      '<span class="drp-selected"></span>' +
-      '<button class="cancelBtn" type="button"></button>' +
-      '<button class="applyBtn" disabled="disabled" type="button"></button> ' +
-      '</div>' +
-      '</div>'
-
-  this.parentEl =
-    options.parentEl && $(options.parentEl).length ? $(options.parentEl) : $(this.parentEl)
-  this.container = $(options.template).appendTo(this.parentEl)
-
-  //
-  // handle all the possible options overriding defaults
-  //
-
-  if (options.locale) {
-    if (options.locale.direction) this.locale.direction = options.locale.direction
-
-    if (options.locale.format) this.locale.format = options.locale.format
-
-    if (options.locale.separator) this.locale.separator = options.locale.separator
-
-    if (options.locale.daysOfWeek) this.locale.daysOfWeek = options.locale.daysOfWeek.slice()
-
-    if (options.locale.monthNames) this.locale.monthNames = options.locale.monthNames.slice()
-
-    if (options.locale.firstDay !== undefined) this.locale.firstDay = options.locale.firstDay
-
-    if (options.locale.applyLabel) this.locale.applyLabel = options.locale.applyLabel
-
-    if (options.locale.cancelLabel) this.locale.cancelLabel = options.locale.cancelLabel
-
-    if (options.locale.weekLabel) this.locale.weekLabel = options.locale.weekLabel
-
-    if (options.locale.customRangeLabel) {
-      //Support unicode chars in the custom range name.
-      var elem = document.createElement('textarea')
-      elem.innerHTML = options.locale.customRangeLabel
-      var rangeHtml = elem.value
-      this.locale.customRangeLabel = rangeHtml
+    this.locale = {
+      direction: 'ltr',
+      format: moment.localeData().longDateFormat('L'),
+      separator: ' - ',
+      applyLabel: 'Apply',
+      cancelLabel: 'Cancel',
+      weekLabel: 'W',
+      customRangeLabel: 'Custom Range',
+      daysOfWeek: moment.weekdaysMin(),
+      monthNames: moment.monthsShort(),
+      firstDay: moment.localeData().firstDayOfWeek(),
     }
-  }
-  this.container.addClass(this.locale.direction)
 
-  if (options.startDate) {
-    if (typeof options.startDate == 'string')
-      this.startDate = moment(options.startDate, this.locale.format)
-    else this.startDate = moment(options.startDate)
-  }
+    this.callback = function () {}
 
-  if (options.endDate) {
-    if (typeof options.endDate == 'string')
-      this.endDate = moment(options.endDate, this.locale.format)
-    else this.endDate = moment(options.endDate)
-  }
+    //some state information
+    this.isShowing = false
+    this.leftCalendar = {}
+    this.rightCalendar = {}
 
-  if (options.maxDate) {
-    if (typeof options.maxDate == 'string')
-      this.maxDate = moment(options.maxDate, this.locale.format)
-    else this.maxDate = moment(options.maxDate)
-  }
+    //custom options from user
+    if (typeof options !== 'object' || options === null) options = {}
 
-  if (options.minDate) {
-    if (typeof options.minDate === 'string')
-      this.minDate = moment(options.minDate, this.locale.format)
-    else this.minDate = moment(options.minDate)
-  }
+    //allow setting options with data attributes
+    //data-api options will be overwritten with custom javascript options
+    options = $.extend(this.element.data(), options)
 
-  // sanity check for bad options
-  if (this.minDate && this.startDate.isBefore(this.minDate)) this.startDate = this.minDate.clone()
+    //html template for the picker UI
+    if (!options.template)
+      options.template =
+        '<div class="daterangepicker">' +
+        '<div class="ranges"></div>' +
+        '<div class="drp-calendar left">' +
+        '<div class="calendar-table"></div>' +
+        '<div class="calendar-time"></div>' +
+        '</div>' +
+        '<div class="drp-calendar right">' +
+        '<div class="calendar-table"></div>' +
+        '<div class="calendar-time"></div>' +
+        '</div>' +
+        '<div class="drp-buttons">' +
+        '<span class="drp-selected"></span>' +
+        '<button class="cancelBtn" type="button"></button>' +
+        '<button class="applyBtn" disabled="disabled" type="button"></button> ' +
+        '</div>' +
+        '</div>'
 
-  // sanity check for bad options
-  if (this.maxDate && this.endDate.isAfter(this.maxDate)) this.endDate = this.maxDate.clone()
+    this.parentEl =
+      options.parentEl && $(options.parentEl).length ? $(options.parentEl) : $(this.parentEl)
+    this.container = $(options.template).appendTo(this.parentEl)
 
-  if (options.applyButtonClasses) this.applyButtonClasses = options.applyButtonClasses
+    //
+    // handle all the possible options overriding defaults
+    //
 
-  if (options.applyClass)
-    //backwards compat
-    this.applyButtonClasses = options.applyClass
+    if (options.locale) {
+      if (options.locale.direction) this.locale.direction = options.locale.direction
 
-  if (options.cancelButtonClasses) this.cancelButtonClasses = options.cancelButtonClasses
+      if (options.locale.format) this.locale.format = options.locale.format
 
-  if (options.cancelClass)
-    //backwards compat
-    this.cancelButtonClasses = options.cancelClass
+      if (options.locale.separator) this.locale.separator = options.locale.separator
 
-  if (typeof options.maxSpan === 'object') this.maxSpan = options.maxSpan
+      if (options.locale.daysOfWeek) this.locale.daysOfWeek = options.locale.daysOfWeek.slice()
 
-  if (typeof options.dateLimit === 'object')
-    //backwards compat
-    this.maxSpan = options.dateLimit
+      if (options.locale.monthNames) this.locale.monthNames = options.locale.monthNames.slice()
 
-  if (options.opens) this.opens = options.opens
+      if (options.locale.firstDay !== undefined) this.locale.firstDay = options.locale.firstDay
 
-  if (options.drops) this.drops = options.drops
+      if (options.locale.applyLabel) this.locale.applyLabel = options.locale.applyLabel
 
-  if (options.showWeekNumbers) this.showWeekNumbers = options.showWeekNumbers
+      if (options.locale.cancelLabel) this.locale.cancelLabel = options.locale.cancelLabel
 
-  if (options.showISOWeekNumbers) this.showISOWeekNumbers = options.showISOWeekNumbers
+      if (options.locale.weekLabel) this.locale.weekLabel = options.locale.weekLabel
 
-  if (typeof options.buttonClasses === 'string') this.buttonClasses = options.buttonClasses
-
-  if (typeof options.buttonClasses === 'object')
-    this.buttonClasses = options.buttonClasses.join(' ')
-
-  if (options.showDropdowns) this.showDropdowns = options.showDropdowns
-
-  if (options.minYear) this.minYear = options.minYear
-
-  if (options.maxYear) this.maxYear = options.maxYear
-
-  if (options.showCustomRangeLabel) this.showCustomRangeLabel = options.showCustomRangeLabel
-
-  if (options.singleDatePicker) {
-    this.singleDatePicker = options.singleDatePicker
-    if (this.singleDatePicker) this.endDate = this.startDate.clone()
-  }
-
-  if (options.timePicker) this.timePicker = options.timePicker
-
-  if (options.timePickerSeconds) this.timePickerSeconds = options.timePickerSeconds
-
-  if (options.timePickerIncrement) this.timePickerIncrement = options.timePickerIncrement
-
-  if (options.timePicker24Hour) this.timePicker24Hour = options.timePicker24Hour
-
-  if (options.autoApply) this.autoApply = options.autoApply
-
-  if (options.autoUpdateInput) this.autoUpdateInput = options.autoUpdateInput
-
-  if (options.linkedCalendars) this.linkedCalendars = options.linkedCalendars
-
-  if (typeof options.isInvalidDate === 'function') this.isInvalidDate = options.isInvalidDate
-
-  if (typeof options.isCustomDate === 'function') this.isCustomDate = options.isCustomDate
-
-  if (typeof options.alwaysShowCalendars === 'boolean')
-    this.alwaysShowCalendars = options.alwaysShowCalendars
-
-  // update day names order to firstDay
-  if (this.locale.firstDay != 0) {
-    var iterator = this.locale.firstDay
-    while (iterator > 0) {
-      const shiftDay = this.locale.daysOfWeek.shift()
-      if (shiftDay) this.locale.daysOfWeek.push(shiftDay)
-      iterator--
-    }
-  }
-
-  var start, end, range
-
-  //if no start/end dates set, check if an input element contains initial values
-  if (typeof options.startDate === 'undefined' && typeof options.endDate === 'undefined') {
-    if ($(this.element).is(':text')) {
-      var val = $(this.element).val(),
-        split = val.split(this.locale.separator)
-
-      start = end = null
-
-      if (split.length == 2) {
-        start = moment(split[0], this.locale.format)
-        end = moment(split[1], this.locale.format)
-      } else if (this.singleDatePicker && val !== '') {
-        start = moment(val, this.locale.format)
-        end = moment(val, this.locale.format)
-      }
-      if (start !== null && end !== null) {
-        this.setStartDate(start)
-        this.setEndDate(end)
+      if (options.locale.customRangeLabel) {
+        //Support unicode chars in the custom range name.
+        var elem = document.createElement('textarea')
+        elem.innerHTML = options.locale.customRangeLabel
+        var rangeHtml = elem.value
+        this.locale.customRangeLabel = rangeHtml
       }
     }
-  }
+    this.container.addClass(this.locale.direction)
 
-  if (typeof options.ranges === 'object') {
-    for (range in options.ranges) {
-      if (typeof options.ranges[range][0] === 'string')
-        start = moment(options.ranges[range][0], this.locale.format)
-      else start = moment(options.ranges[range][0])
-
-      if (typeof options.ranges[range][1] === 'string')
-        end = moment(options.ranges[range][1], this.locale.format)
-      else end = moment(options.ranges[range][1])
-
-      // If the start or end date exceed those allowed by the minDate or maxSpan
-      // options, shorten the range to the allowable period.
-      if (this.minDate && start.isBefore(this.minDate)) start = this.minDate.clone()
-
-      var maxDate = this.maxDate
-      if (this.maxSpan && maxDate && start.clone().add(this.maxSpan).isAfter(maxDate))
-        maxDate = start.clone().add(this.maxSpan)
-      if (maxDate && end.isAfter(maxDate)) end = maxDate.clone()
-
-      // If the end of the range is before the minimum or the start of the range is
-      // after the maximum, don't display this range option at all.
-      if (
-        (this.minDate && end.isBefore(this.minDate, this.timepicker ? 'minute' : 'day')) ||
-        (maxDate && start.isAfter(maxDate, this.timepicker ? 'minute' : 'day'))
-      )
-        continue
-
-      //Support unicode chars in the range names.
-      var elem = document.createElement('textarea')
-      elem.innerHTML = range
-      var rangeHtml = elem.value
-
-      this.ranges[rangeHtml] = [start, end]
+    if (options.startDate) {
+      if (typeof options.startDate == 'string')
+        this.startDate = moment(options.startDate, this.locale.format)
+      else this.startDate = moment(options.startDate)
     }
 
-    var list = '<ul>'
-    for (range in this.ranges) {
-      list += '<li data-range-key="' + range + '">' + range + '</li>'
+    if (options.endDate) {
+      if (typeof options.endDate == 'string')
+        this.endDate = moment(options.endDate, this.locale.format)
+      else this.endDate = moment(options.endDate)
     }
-    if (this.showCustomRangeLabel) {
-      list +=
-        '<li data-range-key="' +
-        this.locale.customRangeLabel +
-        '">' +
-        this.locale.customRangeLabel +
-        '</li>'
+
+    if (options.maxDate) {
+      if (typeof options.maxDate == 'string')
+        this.maxDate = moment(options.maxDate, this.locale.format)
+      else this.maxDate = moment(options.maxDate)
     }
-    list += '</ul>'
-    this.container.find('.ranges').prepend(list)
-  }
 
-  if (typeof cb === 'function') {
-    this.callback = cb
-  }
+    if (options.minDate) {
+      if (typeof options.minDate === 'string')
+        this.minDate = moment(options.minDate, this.locale.format)
+      else this.minDate = moment(options.minDate)
+    }
 
-  if (!this.timePicker) {
-    this.startDate = this.startDate.startOf('day')
-    this.endDate = this.endDate.endOf('day')
-    this.container.find('.calendar-time').hide()
-  }
+    // sanity check for bad options
+    if (this.minDate && this.startDate.isBefore(this.minDate)) this.startDate = this.minDate.clone()
 
-  //can't be used together for now
-  if (this.timePicker && this.autoApply) this.autoApply = false
+    // sanity check for bad options
+    if (this.maxDate && this.endDate.isAfter(this.maxDate)) this.endDate = this.maxDate.clone()
 
-  if (this.autoApply) {
-    this.container.addClass('auto-apply')
-  }
+    if (options.applyButtonClasses) this.applyButtonClasses = options.applyButtonClasses
 
-  if (typeof options.ranges === 'object') this.container.addClass('show-ranges')
+    if (options.applyClass)
+      //backwards compat
+      this.applyButtonClasses = options.applyClass
 
-  if (this.singleDatePicker) {
-    this.container.addClass('single')
-    this.container.find('.drp-calendar.left').addClass('single')
-    this.container.find('.drp-calendar.left').show()
-    this.container.find('.drp-calendar.right').hide()
-    if (!this.timePicker && this.autoApply) {
+    if (options.cancelButtonClasses) this.cancelButtonClasses = options.cancelButtonClasses
+
+    if (options.cancelClass)
+      //backwards compat
+      this.cancelButtonClasses = options.cancelClass
+
+    if (typeof options.maxSpan === 'object') this.maxSpan = options.maxSpan
+
+    if (typeof options.dateLimit === 'object')
+      //backwards compat
+      this.maxSpan = options.dateLimit
+
+    if (options.opens) this.opens = options.opens
+
+    if (options.drops) this.drops = options.drops
+
+    if (options.showWeekNumbers) this.showWeekNumbers = options.showWeekNumbers
+
+    if (options.showISOWeekNumbers) this.showISOWeekNumbers = options.showISOWeekNumbers
+
+    if (typeof options.buttonClasses === 'string') this.buttonClasses = options.buttonClasses
+
+    if (typeof options.buttonClasses === 'object')
+      this.buttonClasses = options.buttonClasses.join(' ')
+
+    if (options.showDropdowns) this.showDropdowns = options.showDropdowns
+
+    if (options.minYear) this.minYear = options.minYear
+
+    if (options.maxYear) this.maxYear = options.maxYear
+
+    if (options.showCustomRangeLabel) this.showCustomRangeLabel = options.showCustomRangeLabel
+
+    if (options.singleDatePicker) {
+      this.singleDatePicker = options.singleDatePicker
+      if (this.singleDatePicker) this.endDate = this.startDate.clone()
+    }
+
+    if (options.timePicker) this.timePicker = options.timePicker
+
+    if (options.timePickerSeconds) this.timePickerSeconds = options.timePickerSeconds
+
+    if (options.timePickerIncrement) this.timePickerIncrement = options.timePickerIncrement
+
+    if (options.timePicker24Hour) this.timePicker24Hour = options.timePicker24Hour
+
+    if (options.autoApply) this.autoApply = options.autoApply
+
+    if (options.autoUpdateInput) this.autoUpdateInput = options.autoUpdateInput
+
+    if (options.linkedCalendars) this.linkedCalendars = options.linkedCalendars
+
+    if (typeof options.isInvalidDate === 'function') this.isInvalidDate = options.isInvalidDate
+
+    if (typeof options.isCustomDate === 'function') this.isCustomDate = options.isCustomDate
+
+    if (typeof options.alwaysShowCalendars === 'boolean')
+      this.alwaysShowCalendars = options.alwaysShowCalendars
+
+    // update day names order to firstDay
+    if (this.locale.firstDay != 0) {
+      var iterator = this.locale.firstDay
+      while (iterator > 0) {
+        const shiftDay = this.locale.daysOfWeek.shift()
+        if (shiftDay) this.locale.daysOfWeek.push(shiftDay)
+        iterator--
+      }
+    }
+
+    var start, end, range
+
+    //if no start/end dates set, check if an input element contains initial values
+    if (typeof options.startDate === 'undefined' && typeof options.endDate === 'undefined') {
+      if ($(this.element).is(':text')) {
+        var val = $(this.element).val(),
+          split = val.split(this.locale.separator)
+
+        start = end = null
+
+        if (split.length == 2) {
+          start = moment(split[0], this.locale.format)
+          end = moment(split[1], this.locale.format)
+        } else if (this.singleDatePicker && val !== '') {
+          start = moment(val, this.locale.format)
+          end = moment(val, this.locale.format)
+        }
+        if (start !== null && end !== null) {
+          this.setStartDate(start)
+          this.setEndDate(end)
+        }
+      }
+    }
+
+    if (typeof options.ranges === 'object') {
+      for (range in options.ranges) {
+        if (typeof options.ranges[range][0] === 'string')
+          start = moment(options.ranges[range][0], this.locale.format)
+        else start = moment(options.ranges[range][0])
+
+        if (typeof options.ranges[range][1] === 'string')
+          end = moment(options.ranges[range][1], this.locale.format)
+        else end = moment(options.ranges[range][1])
+
+        // If the start or end date exceed those allowed by the minDate or maxSpan
+        // options, shorten the range to the allowable period.
+        if (this.minDate && start.isBefore(this.minDate)) start = this.minDate.clone()
+
+        var maxDate = this.maxDate
+        if (this.maxSpan && maxDate && start.clone().add(this.maxSpan).isAfter(maxDate))
+          maxDate = start.clone().add(this.maxSpan)
+        if (maxDate && end.isAfter(maxDate)) end = maxDate.clone()
+
+        // If the end of the range is before the minimum or the start of the range is
+        // after the maximum, don't display this range option at all.
+        if (
+          (this.minDate && end.isBefore(this.minDate, this.timepicker ? 'minute' : 'day')) ||
+          (maxDate && start.isAfter(maxDate, this.timepicker ? 'minute' : 'day'))
+        )
+          continue
+
+        //Support unicode chars in the range names.
+        var elem = document.createElement('textarea')
+        elem.innerHTML = range
+        var rangeHtml = elem.value
+
+        this.ranges[rangeHtml] = [start, end]
+      }
+
+      var list = '<ul>'
+      for (range in this.ranges) {
+        list += '<li data-range-key="' + range + '">' + range + '</li>'
+      }
+      if (this.showCustomRangeLabel) {
+        list +=
+          '<li data-range-key="' +
+          this.locale.customRangeLabel +
+          '">' +
+          this.locale.customRangeLabel +
+          '</li>'
+      }
+      list += '</ul>'
+      this.container.find('.ranges').prepend(list)
+    }
+
+    if (typeof cb === 'function') {
+      this.callback = cb
+    }
+
+    if (!this.timePicker) {
+      this.startDate = this.startDate.startOf('day')
+      this.endDate = this.endDate.endOf('day')
+      this.container.find('.calendar-time').hide()
+    }
+
+    //can't be used together for now
+    if (this.timePicker && this.autoApply) this.autoApply = false
+
+    if (this.autoApply) {
       this.container.addClass('auto-apply')
     }
+
+    if (typeof options.ranges === 'object') this.container.addClass('show-ranges')
+
+    if (this.singleDatePicker) {
+      this.container.addClass('single')
+      this.container.find('.drp-calendar.left').addClass('single')
+      this.container.find('.drp-calendar.left').show()
+      this.container.find('.drp-calendar.right').hide()
+      if (!this.timePicker && this.autoApply) {
+        this.container.addClass('auto-apply')
+      }
+    }
+
+    if (
+      (typeof options.ranges === 'undefined' && !this.singleDatePicker) ||
+      this.alwaysShowCalendars
+    ) {
+      this.container.addClass('show-calendar')
+    }
+
+    this.container.addClass('opens' + this.opens)
+
+    //apply CSS classes and labels to buttons
+    this.container.find('.applyBtn, .cancelBtn').addClass(this.buttonClasses)
+    if (this.applyButtonClasses.length)
+      this.container.find('.applyBtn').addClass(this.applyButtonClasses)
+    if (this.cancelButtonClasses.length)
+      this.container.find('.cancelBtn').addClass(this.cancelButtonClasses)
+    this.container.find('.applyBtn').html(this.locale.applyLabel)
+    this.container.find('.cancelBtn').html(this.locale.cancelLabel)
+
+    //
+    // event listeners
+    //
+
+    this.container
+      .find('.drp-calendar')
+      .on('click.daterangepicker', '.prev', $.proxy(this.clickPrev, this))
+      .on('click.daterangepicker', '.next', $.proxy(this.clickNext, this))
+      .on('mousedown.daterangepicker', 'td.available', $.proxy(this.clickDate, this))
+      .on('mouseenter.daterangepicker', 'td.available', $.proxy(this.hoverDate, this))
+      .on('change.daterangepicker', 'select.yearselect', $.proxy(this.monthOrYearChanged, this))
+      .on('change.daterangepicker', 'select.monthselect', $.proxy(this.monthOrYearChanged, this))
+      .on(
+        'change.daterangepicker',
+        'select.hourselect,select.minuteselect,select.secondselect,select.ampmselect',
+        $.proxy(this.timeChanged, this)
+      )
+
+    this.container.find('.ranges').on('click.daterangepicker', 'li', $.proxy(this.clickRange, this))
+
+    this.container
+      .find('.drp-buttons')
+      .on('click.daterangepicker', 'button.applyBtn', $.proxy(this.clickApply, this))
+      .on('click.daterangepicker', 'button.cancelBtn', $.proxy(this.clickCancel, this))
+
+    if (this.element.is('input') || this.element.is('button')) {
+      this.element.on({
+        'click.daterangepicker': $.proxy(this.show, this),
+        'focus.daterangepicker': $.proxy(this.show, this),
+        'keyup.daterangepicker': $.proxy(this.elementChanged, this),
+        'keydown.daterangepicker': $.proxy(this.keydown, this), //IE 11 compatibility
+      })
+    } else {
+      this.element.on('click.daterangepicker', $.proxy(this.toggle, this))
+      this.element.on('keydown.daterangepicker', $.proxy(this.toggle, this))
+    }
+
+    //
+    // if attached to a text input, set the initial value
+    //
+
+    this.updateElement()
   }
 
-  if (
-    (typeof options.ranges === 'undefined' && !this.singleDatePicker) ||
-    this.alwaysShowCalendars
-  ) {
-    this.container.addClass('show-calendar')
-  }
-
-  this.container.addClass('opens' + this.opens)
-
-  //apply CSS classes and labels to buttons
-  this.container.find('.applyBtn, .cancelBtn').addClass(this.buttonClasses)
-  if (this.applyButtonClasses.length)
-    this.container.find('.applyBtn').addClass(this.applyButtonClasses)
-  if (this.cancelButtonClasses.length)
-    this.container.find('.cancelBtn').addClass(this.cancelButtonClasses)
-  this.container.find('.applyBtn').html(this.locale.applyLabel)
-  this.container.find('.cancelBtn').html(this.locale.cancelLabel)
-
-  //
-  // event listeners
-  //
-
-  this.container
-    .find('.drp-calendar')
-    .on('click.daterangepicker', '.prev', $.proxy(this.clickPrev, this))
-    .on('click.daterangepicker', '.next', $.proxy(this.clickNext, this))
-    .on('mousedown.daterangepicker', 'td.available', $.proxy(this.clickDate, this))
-    .on('mouseenter.daterangepicker', 'td.available', $.proxy(this.hoverDate, this))
-    .on('change.daterangepicker', 'select.yearselect', $.proxy(this.monthOrYearChanged, this))
-    .on('change.daterangepicker', 'select.monthselect', $.proxy(this.monthOrYearChanged, this))
-    .on(
-      'change.daterangepicker',
-      'select.hourselect,select.minuteselect,select.secondselect,select.ampmselect',
-      $.proxy(this.timeChanged, this)
-    )
-
-  this.container.find('.ranges').on('click.daterangepicker', 'li', $.proxy(this.clickRange, this))
-
-  this.container
-    .find('.drp-buttons')
-    .on('click.daterangepicker', 'button.applyBtn', $.proxy(this.clickApply, this))
-    .on('click.daterangepicker', 'button.cancelBtn', $.proxy(this.clickCancel, this))
-
-  if (this.element.is('input') || this.element.is('button')) {
-    this.element.on({
-      'click.daterangepicker': $.proxy(this.show, this),
-      'focus.daterangepicker': $.proxy(this.show, this),
-      'keyup.daterangepicker': $.proxy(this.elementChanged, this),
-      'keydown.daterangepicker': $.proxy(this.keydown, this), //IE 11 compatibility
-    })
-  } else {
-    this.element.on('click.daterangepicker', $.proxy(this.toggle, this))
-    this.element.on('keydown.daterangepicker', $.proxy(this.toggle, this))
-  }
-
-  //
-  // if attached to a text input, set the initial value
-  //
-
-  this.updateElement()
-}
-
-DateRangePicker.prototype = {
-  constructor: DateRangePicker,
-
-  setStartDate: function (startDate) {
+  setStartDate(startDate) {
     if (typeof startDate === 'string') this.startDate = moment(startDate, this.locale.format)
 
     if (typeof startDate === 'object') this.startDate = moment(startDate)
@@ -527,9 +555,9 @@ DateRangePicker.prototype = {
     if (!this.isShowing) this.updateElement()
 
     this.updateMonthsInView()
-  },
+  }
 
-  setEndDate: function (endDate) {
+  setEndDate(endDate) {
     if (typeof endDate === 'string') this.endDate = moment(endDate, this.locale.format)
 
     if (typeof endDate === 'object') this.endDate = moment(endDate)
@@ -561,17 +589,17 @@ DateRangePicker.prototype = {
     if (!this.isShowing) this.updateElement()
 
     this.updateMonthsInView()
-  },
+  }
 
-  isInvalidDate: function () {
+  isInvalidDate() {
     return false
-  },
+  }
 
-  isCustomDate: function () {
+  isCustomDate() {
     return false
-  },
+  }
 
-  updateView: function () {
+  updateView() {
     if (this.timePicker) {
       this.renderTimePicker('left')
       this.renderTimePicker('right')
@@ -598,9 +626,9 @@ DateRangePicker.prototype = {
     this.updateMonthsInView()
     this.updateCalendars()
     this.updateFormInputs()
-  },
+  }
 
-  updateMonthsInView: function () {
+  updateMonthsInView() {
     if (this.endDate) {
       //if both dates are visible already, do nothing
       if (
@@ -643,9 +671,9 @@ DateRangePicker.prototype = {
       this.rightCalendar.month = this.maxDate.clone().date(2)
       this.leftCalendar.month = this.maxDate.clone().date(2).subtract(1, 'month')
     }
-  },
+  }
 
-  updateCalendars: function () {
+  updateCalendars() {
     if (this.timePicker) {
       var hour, minute, second
       if (this.endDate) {
@@ -689,9 +717,9 @@ DateRangePicker.prototype = {
     if (this.endDate == null) return
 
     this.calculateChosenLabel()
-  },
+  }
 
-  renderCalendar: function (side) {
+  renderCalendar(side) {
     //
     // Build the matrix of dates that will populate the calendar
     //
@@ -964,9 +992,9 @@ DateRangePicker.prototype = {
     html += '</table>'
 
     this.container.find('.drp-calendar.' + side + ' .calendar-table').html(html)
-  },
+  }
 
-  renderTimePicker: function (side) {
+  renderTimePicker(side) {
     // Don't bother updating the time picker if it's currently disabled
     // because an end date hasn't been clicked yet
     if (side == 'right' && !this.endDate) return
@@ -1140,9 +1168,9 @@ DateRangePicker.prototype = {
     }
 
     this.container.find('.drp-calendar.' + side + ' .calendar-time').html(html)
-  },
+  }
 
-  updateFormInputs: function () {
+  updateFormInputs() {
     if (
       this.singleDatePicker ||
       (this.endDate &&
@@ -1152,9 +1180,9 @@ DateRangePicker.prototype = {
     } else {
       this.container.find('button.applyBtn').prop('disabled', true)
     }
-  },
+  }
 
-  move: function () {
+  move() {
     var parentOffset = { top: 0, left: 0 },
       containerTop,
       drops = this.drops
@@ -1250,9 +1278,9 @@ DateRangePicker.prototype = {
         })
       }
     }
-  },
+  }
 
-  show: function (e) {
+  show(e) {
     if (this.isShowing) return
 
     // Create a click proxy that is private to this instance of datepicker, for unbinding
@@ -1287,9 +1315,9 @@ DateRangePicker.prototype = {
     this.move()
     this.element.trigger('show.daterangepicker', this)
     this.isShowing = true
-  },
+  }
 
-  hide: function (e) {
+  hide(e) {
     if (!this.isShowing) return
 
     //incomplete date selection, revert to last values
@@ -1310,17 +1338,17 @@ DateRangePicker.prototype = {
     this.container.hide()
     this.element.trigger('hide.daterangepicker', this)
     this.isShowing = false
-  },
+  }
 
-  toggle: function (e) {
+  toggle(e) {
     if (this.isShowing) {
       this.hide()
     } else {
       this.show()
     }
-  },
+  }
 
-  outsideClick: function (e) {
+  outsideClick(e) {
     var target = $(e.target)
     // if the page is clicked anywhere except within the daterangerpicker/button
     // itself then call this.hide()
@@ -1334,20 +1362,20 @@ DateRangePicker.prototype = {
       return
     this.hide()
     this.element.trigger('outsideClick.daterangepicker', this)
-  },
+  }
 
-  showCalendars: function () {
+  showCalendars() {
     this.container.addClass('show-calendar')
     this.move()
     this.element.trigger('showCalendar.daterangepicker', this)
-  },
+  }
 
-  hideCalendars: function () {
+  hideCalendars() {
     this.container.removeClass('show-calendar')
     this.element.trigger('hideCalendar.daterangepicker', this)
-  },
+  }
 
-  clickRange: function (e) {
+  clickRange(e) {
     var label = e.target.getAttribute('data-range-key')
     this.chosenLabel = label
     if (label == this.locale.customRangeLabel) {
@@ -1365,9 +1393,9 @@ DateRangePicker.prototype = {
       if (!this.alwaysShowCalendars) this.hideCalendars()
       this.clickApply()
     }
-  },
+  }
 
-  clickPrev: function (e) {
+  clickPrev(e) {
     var cal = $(e.target).parents('.drp-calendar')
     if (cal.hasClass('left')) {
       this.leftCalendar.month.subtract(1, 'month')
@@ -1376,9 +1404,9 @@ DateRangePicker.prototype = {
       this.rightCalendar.month.subtract(1, 'month')
     }
     this.updateCalendars()
-  },
+  }
 
-  clickNext: function (e) {
+  clickNext(e) {
     var cal = $(e.target).parents('.drp-calendar')
     if (cal.hasClass('left')) {
       this.leftCalendar.month.add(1, 'month')
@@ -1387,9 +1415,9 @@ DateRangePicker.prototype = {
       if (this.linkedCalendars) this.leftCalendar.month.add(1, 'month')
     }
     this.updateCalendars()
-  },
+  }
 
-  hoverDate: function (e) {
+  hoverDate(e) {
     //ignore dates that can't be selected
     if (!$(e.target).hasClass('available')) return
 
@@ -1425,9 +1453,9 @@ DateRangePicker.prototype = {
         }
       })
     }
-  },
+  }
 
-  clickDate: function (e) {
+  clickDate(e) {
     if (!$(e.target).hasClass('available')) return
 
     var title = $(e.target).attr('data-title')
@@ -1505,9 +1533,9 @@ DateRangePicker.prototype = {
 
     //This is to cancel the blur event handler if the mouse was in one of the inputs
     e.stopPropagation()
-  },
+  }
 
-  calculateChosenLabel: function () {
+  calculateChosenLabel() {
     var customRange = true
     var i = 0
     for (var range in this.ranges) {
@@ -1552,21 +1580,21 @@ DateRangePicker.prototype = {
       }
       this.showCalendars()
     }
-  },
+  }
 
-  clickApply: function (e) {
+  clickApply(e) {
     this.hide()
     this.element.trigger('apply.daterangepicker', this)
-  },
+  }
 
-  clickCancel: function (e) {
+  clickCancel(e) {
     this.startDate = this.oldStartDate
     this.endDate = this.oldEndDate
     this.hide()
     this.element.trigger('cancel.daterangepicker', this)
-  },
+  }
 
-  monthOrYearChanged: function (e) {
+  monthOrYearChanged(e) {
     var isLeft = $(e.target).closest('.drp-calendar').hasClass('left'),
       leftOrRight = isLeft ? 'left' : 'right',
       cal = this.container.find('.drp-calendar.' + leftOrRight)
@@ -1615,9 +1643,9 @@ DateRangePicker.prototype = {
         this.leftCalendar.month = this.rightCalendar.month.clone().subtract(1, 'month')
     }
     this.updateCalendars()
-  },
+  }
 
-  timeChanged: function (e) {
+  timeChanged(e) {
     var cal = $(e.target).closest('.drp-calendar'),
       isLeft = cal.hasClass('left')
 
@@ -1666,9 +1694,9 @@ DateRangePicker.prototype = {
     //re-render the time pickers because changing one selection can affect what's enabled in another
     this.renderTimePicker('left')
     this.renderTimePicker('right')
-  },
+  }
 
-  elementChanged: function () {
+  elementChanged() {
     if (!this.element.is('input')) return
     if (!this.element.val().length) return
 
@@ -1691,9 +1719,9 @@ DateRangePicker.prototype = {
     this.setStartDate(start)
     this.setEndDate(end)
     this.updateView()
-  },
+  }
 
-  keydown: function (e) {
+  keydown(e) {
     //hide on tab or enter
     if (e.keyCode === 9 || e.keyCode === 13) {
       this.hide()
@@ -1706,9 +1734,9 @@ DateRangePicker.prototype = {
 
       this.hide()
     }
-  },
+  }
 
-  updateElement: function () {
+  updateElement() {
     if (this.element.is('input') && this.autoUpdateInput) {
       var newValue = this.startDate.format(this.locale.format)
       if (!this.singleDatePicker) {
@@ -1718,16 +1746,16 @@ DateRangePicker.prototype = {
         this.element.val(newValue).trigger('change')
       }
     }
-  },
+  }
 
-  remove: function () {
+  remove() {
     this.container.remove()
     this.element.off('.daterangepicker')
     this.element.removeData()
-  },
+  }
 }
 
-$.fn.daterangepicker = function (options, callback) {
+$.fn.daterangepicker = function (options?: DateRangePickerOptions, callback?: DateRangePickerCallback) {
   var implementOptions = $.extend(true, {}, $.fn.daterangepicker.defaultOptions, options)
   this.each(function () {
     var el = $(this)
