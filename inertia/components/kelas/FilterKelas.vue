@@ -14,7 +14,8 @@
                 <a href="javascript:void(0);" class="btn btn-outline-light bg-white dropdown-toggle"
                     data-bs-toggle="dropdown" data-bs-auto-close="outside"><i class="ti ti-filter me-2"></i>Filter</a>
                 <template #popper>
-                    <div class="block bg-white text-dark text-sm min-w-[250px] sm:min-w-[350px] max-w-full p-0 border-light-900 z-10">
+                    <div
+                        class="block bg-white text-dark text-sm min-w-[250px] sm:min-w-[350px] max-w-full p-0 border-light-900 z-10">
                         <form>
                             <div class="flex items-center border-b border-b-light p-4">
                                 <h4 class="text-dark text-base font-semibold mb-0">Filter</h4>
@@ -24,21 +25,22 @@
                                     <div class="px-3 max-w-full flex-none w-full">
                                         <div class="mb-4">
                                             <label class="form-label">Class</label>
-                                            <VueSelect :options="ClasSelecOne" v-model="selected"
-                                                placeholder="Select" />
+                                            <VueSelect :classes="{ 'control': 'bg-light!' }" :options="ClasSelecOne"
+                                                v-model="selected" placeholder="Select" />
                                         </div>
                                     </div>
                                     <div class="px-3 max-w-full flex-none w-full">
                                         <div class="mb-4">
                                             <label class="form-label">Section</label>
-                                            <VueSelect :options="ClassSece" v-model="selectedOne"
-                                                placeholder="Select" />
+                                            <VueSelect :classes="{ 'control': 'bg-light!' }" :options="ClassSece"
+                                                v-model="selectedOne" placeholder="Select" />
                                         </div>
                                     </div>
                                     <div class="px-3 max-w-full flex-none w-full">
                                         <div class="mb-4">
                                             <label class="form-label">Status</label>
-                                            <VueSelect :classes="{'control': 'bg-light'}" :options="SeleSts" v-model="selectedTwo" placeholder="Select" />
+                                            <VueSelect :classes="{ 'control': 'bg-light!' }" :options="SeleSts"
+                                                v-model="selectedTwo" placeholder="Select" />
                                         </div>
                                     </div>
                                 </div>
