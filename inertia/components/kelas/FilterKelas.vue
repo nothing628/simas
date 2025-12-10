@@ -2,47 +2,48 @@
     <div class="card-header flex items-center justify-between flex-wrap pb-0">
         <h4 class="mb-4 font-semibold text-lg text-dark">Classes List</h4>
         <div class="flex items-center flex-wrap">
-            <div class="input-icon-start mb-3 me-2 position-relative">
-                <span class="icon-addon">
+            <div class="input-icon-start mb-4 mr-2 relative">
+                <span
+                    class="absolute flex items-center justify-center top-0 bottom-0 left-0 min-w-8 pointer-events-none text-gray-700 text-base">
                     <i class="ti ti-calendar"></i>
                 </span>
-                <input type="text" class="form-control date-range bookingrange" placeholder="Select"
+                <input type="text" class="form-control date-range bookingrange pl-7" placeholder="Select"
                     value="Academic Year : 2024 / 2025" ref="dateRangeInput" />
             </div>
-            <VDropdown class="mb-4 mr-2">
+            <VDropdown placement="bottom-end" class="mb-4 mr-2">
                 <a href="javascript:void(0);" class="btn btn-outline-light bg-white dropdown-toggle"
                     data-bs-toggle="dropdown" data-bs-auto-close="outside"><i class="ti ti-filter me-2"></i>Filter</a>
                 <template #popper>
-                    <div class="dropdown-menu drop-width">
+                    <div class="block bg-white text-dark text-sm min-w-[250px] sm:min-w-[350px] max-w-full p-0 border-light-900 z-10">
                         <form>
-                            <div class="flex items-center border-bottom p-3">
-                                <h4>Filter</h4>
+                            <div class="flex items-center border-b border-b-light p-4">
+                                <h4 class="text-dark text-base font-semibold mb-0">Filter</h4>
                             </div>
-                            <div class="p-3 border-bottom pb-0">
+                            <div class="p-4 border-b border-b-light pb-0">
                                 <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="mb-3">
+                                    <div class="px-3 max-w-full flex-none w-full">
+                                        <div class="mb-4">
                                             <label class="form-label">Class</label>
                                             <VueSelect :options="ClasSelecOne" v-model="selected"
                                                 placeholder="Select" />
                                         </div>
                                     </div>
-                                    <div class="col-md-12">
-                                        <div class="mb-3">
+                                    <div class="px-3 max-w-full flex-none w-full">
+                                        <div class="mb-4">
                                             <label class="form-label">Section</label>
                                             <VueSelect :options="ClassSece" v-model="selectedOne"
                                                 placeholder="Select" />
                                         </div>
                                     </div>
-                                    <div class="col-md-12">
-                                        <div class="mb-3">
+                                    <div class="px-3 max-w-full flex-none w-full">
+                                        <div class="mb-4">
                                             <label class="form-label">Status</label>
-                                            <VueSelect :options="SeleSts" v-model="selectedTwo" placeholder="Select" />
+                                            <VueSelect :classes="{'control': 'bg-light'}" :options="SeleSts" v-model="selectedTwo" placeholder="Select" />
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="p-3 d-flex align-items-center justify-content-end">
+                            <div class="p-4 flex items-center justify-end">
                                 <a href="javascript:void(0);" class="btn btn-light me-3">Reset</a>
                                 <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Apply</button>
                             </div>
@@ -50,12 +51,12 @@
                     </div>
                 </template>
             </VDropdown>
-            <VDropdown class="mb-4">
+            <VDropdown placement="bottom-end" class="mb-4">
                 <a href="javascript:void(0);" class="btn btn-outline-light bg-white dropdown-toggle"
                     data-bs-toggle="dropdown"><i class="ti ti-sort-ascending-2 me-2"></i>Sort by A-Z
                 </a>
                 <template #popper>
-                    <ul class="dropdown-menu p-3">
+                    <ul class="block bg-white text-dark text-sm p-4 border-light-900 z-10">
                         <li>
                             <a href="javascript:void(0);" class="dropdown-item rounded-1"> Ascending </a>
                         </li>
