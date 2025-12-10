@@ -3,9 +3,16 @@ import moment, { Moment } from 'moment'
 
 type JqueryInstance = JQuery<HTMLElement>
 type JquerySelector = JQuery.htmlString | JQuery.Selector
-type DropDirection = 'down' | 'up'
+type DropDirection = 'down' | 'up' | 'auto'
 type OpenDirection = 'right' | 'left'
 type LocaleDirection = 'ltr' | 'rtl'
+type CalendarTable = Record<string | number, Array<Moment>>
+type Calendar = {
+  month?: Moment
+  calendar?: CalendarTable
+  firstDay?: Moment
+  lastDay?: Moment
+}
 
 export type LocaleObject = {
   direction?: LocaleDirection
@@ -52,8 +59,6 @@ export type DateRangePickerOptions = {
   timePickerIncrement?: number
   minYear?: number
   maxYear?: number
-  cancelClass?: string
-  applyClass?: string
   buttonClasses?: string | string[]
   applyButtonClasses?: string
   cancelButtonClasses?: string
@@ -63,49 +68,24 @@ export type DateRangePickerOptions = {
   endDate?: moment.MomentInput
   minDate?: moment.MomentInput
   maxDate?: moment.MomentInput
+  maxSpan?: moment.DurationInputArg1
+  ranges?: Record<string, DateRange>
+  isInvalidDate?: (date: unknown) => boolean
+  isCustomDate?: (date: unknown) => boolean
 }
 
-export type DateRangePickerInstance = {
-  parentEl: JquerySelector | JqueryInstance
-  container: JqueryInstance
-  maxDate?: moment.Moment
-  minDate?: moment.Moment
-  maxSpan: boolean
-  autoApply: boolean
-  singleDatePicker: boolean
-  showDropdowns: boolean
-  endDate: Moment
-  startDate: Moment
-  element: JqueryInstance
-  minYear: number
-  maxYear: number
-  showWeekNumbers: boolean
-  showISOWeekNumbers: boolean
-  showCustomRangeLabel: boolean
-  timePicker: boolean
-  timePicker24Hour: boolean
-  timePickerSeconds: boolean
-  timePickerIncrement: number
-  linkedCalendars: boolean
-  autoUpdateInput: boolean
-  alwaysShowCalendars: boolean
-  opens: OpenDirection
-  drops: DropDirection
-  buttonClasses: string
-  cancelButtonClasses: string
-  applyButtonClasses: string
-  isShowing: boolean
-  locale: DateRangeLocale
-}
-
-export type DateRangePickerCallback = () => any
+export type DateRangePickerCallback = (start: Moment, end: Moment, chosenLabel?: string) => any
+export type DateRange = [moment.Moment, moment.Moment]
 
 class DateRangePicker {
   parentEl: JquerySelector | JqueryInstance
   container: JqueryInstance
   maxDate?: moment.Moment
   minDate?: moment.Moment
-  maxSpan: boolean
+  oldStartDate?: Moment
+  oldEndDate?: Moment
+  previousRightTime?: Moment
+  maxSpan?: moment.DurationInputArg1
   autoApply: boolean
   singleDatePicker: boolean
   showDropdowns: boolean
@@ -131,6 +111,16 @@ class DateRangePicker {
   applyButtonClasses: string
   isShowing: boolean
   locale: DateRangeLocale
+  ranges: Record<string, DateRange>
+  chosenLabel?: string
+
+  isInvalidDate: (date: unknown) => boolean
+  isCustomDate: (date: unknown) => unknown
+  callback: DateRangePickerCallback
+  _outsideClickProxy?: (e: Event) => any
+
+  leftCalendar: Calendar
+  rightCalendar: Calendar
 
   constructor(
     element: JQuery.htmlString | JQuery.Selector,
@@ -141,7 +131,6 @@ class DateRangePicker {
     this.element = $(element)
     this.startDate = moment().startOf('day')
     this.endDate = moment().endOf('day')
-    this.maxSpan = false
     this.autoApply = false
     this.singleDatePicker = false
     this.showDropdowns = false
@@ -158,6 +147,8 @@ class DateRangePicker {
     this.autoUpdateInput = true
     this.alwaysShowCalendars = false
     this.ranges = {}
+    this.isInvalidDate = () => false
+    this.isCustomDate = () => false
 
     this.opens = 'right'
     if (this.element.hasClass('pull-right')) this.opens = 'left'
@@ -182,7 +173,7 @@ class DateRangePicker {
       firstDay: moment.localeData().firstDayOfWeek(),
     }
 
-    this.callback = function () {}
+    this.callback = () => {}
 
     //some state information
     this.isShowing = false
@@ -285,21 +276,9 @@ class DateRangePicker {
 
     if (options.applyButtonClasses) this.applyButtonClasses = options.applyButtonClasses
 
-    if (options.applyClass)
-      //backwards compat
-      this.applyButtonClasses = options.applyClass
-
     if (options.cancelButtonClasses) this.cancelButtonClasses = options.cancelButtonClasses
 
-    if (options.cancelClass)
-      //backwards compat
-      this.cancelButtonClasses = options.cancelClass
-
-    if (typeof options.maxSpan === 'object') this.maxSpan = options.maxSpan
-
-    if (typeof options.dateLimit === 'object')
-      //backwards compat
-      this.maxSpan = options.dateLimit
+    if (options.maxSpan) this.maxSpan = options.maxSpan
 
     if (options.opens) this.opens = options.opens
 
@@ -309,10 +288,10 @@ class DateRangePicker {
 
     if (options.showISOWeekNumbers) this.showISOWeekNumbers = options.showISOWeekNumbers
 
-    if (typeof options.buttonClasses === 'string') this.buttonClasses = options.buttonClasses
-
-    if (typeof options.buttonClasses === 'object')
-      this.buttonClasses = options.buttonClasses.join(' ')
+    if (options.buttonClasses) {
+      if (typeof options.buttonClasses === 'string') this.buttonClasses = options.buttonClasses
+      else this.buttonClasses = options.buttonClasses.join(' ')
+    }
 
     if (options.showDropdowns) this.showDropdowns = options.showDropdowns
 
@@ -341,9 +320,9 @@ class DateRangePicker {
 
     if (options.linkedCalendars) this.linkedCalendars = options.linkedCalendars
 
-    if (typeof options.isInvalidDate === 'function') this.isInvalidDate = options.isInvalidDate
+    if (options.isInvalidDate) this.isInvalidDate = options.isInvalidDate
 
-    if (typeof options.isCustomDate === 'function') this.isCustomDate = options.isCustomDate
+    if (options.isCustomDate) this.isCustomDate = options.isCustomDate
 
     if (typeof options.alwaysShowCalendars === 'boolean')
       this.alwaysShowCalendars = options.alwaysShowCalendars
@@ -363,8 +342,8 @@ class DateRangePicker {
     //if no start/end dates set, check if an input element contains initial values
     if (typeof options.startDate === 'undefined' && typeof options.endDate === 'undefined') {
       if ($(this.element).is(':text')) {
-        var val = $(this.element).val(),
-          split = val.split(this.locale.separator)
+        const val = $(this.element).val() as string
+        const split = val.split(this.locale.separator)
 
         start = end = null
 
@@ -382,7 +361,7 @@ class DateRangePicker {
       }
     }
 
-    if (typeof options.ranges === 'object') {
+    if (options.ranges) {
       for (range in options.ranges) {
         if (typeof options.ranges[range][0] === 'string')
           start = moment(options.ranges[range][0], this.locale.format)
@@ -404,8 +383,8 @@ class DateRangePicker {
         // If the end of the range is before the minimum or the start of the range is
         // after the maximum, don't display this range option at all.
         if (
-          (this.minDate && end.isBefore(this.minDate, this.timepicker ? 'minute' : 'day')) ||
-          (maxDate && start.isAfter(maxDate, this.timepicker ? 'minute' : 'day'))
+          (this.minDate && end.isBefore(this.minDate, this.timePicker ? 'minute' : 'day')) ||
+          (maxDate && start.isAfter(maxDate, this.timePicker ? 'minute' : 'day'))
         )
           continue
 
@@ -491,11 +470,11 @@ class DateRangePicker {
       .on('mousedown.daterangepicker', 'td.available', $.proxy(this.clickDate, this))
       .on('mouseenter.daterangepicker', 'td.available', $.proxy(this.hoverDate, this))
       .on('change.daterangepicker', 'select.yearselect', $.proxy(this.monthOrYearChanged, this))
-      .on('change.daterangepicker', 'select.monthselect', $.proxy(this.monthOrYearChanged, this))
+      .on('change.daterangepicker', 'select.monthselect', this.monthOrYearChanged.bind(this))
       .on(
         'change.daterangepicker',
         'select.hourselect,select.minuteselect,select.secondselect,select.ampmselect',
-        $.proxy(this.timeChanged, this)
+        this.timeChanged.bind(this)
       )
 
     this.container.find('.ranges').on('click.daterangepicker', 'li', $.proxy(this.clickRange, this))
@@ -524,10 +503,11 @@ class DateRangePicker {
     this.updateElement()
   }
 
-  setStartDate(startDate) {
-    if (typeof startDate === 'string') this.startDate = moment(startDate, this.locale.format)
-
-    if (typeof startDate === 'object') this.startDate = moment(startDate)
+  setStartDate(startDate?: moment.MomentInput) {
+    if (startDate) {
+      if (typeof startDate === 'string') this.startDate = moment(startDate, this.locale.format)
+      else this.startDate = moment(startDate)
+    }
 
     if (!this.timePicker) this.startDate = this.startDate.startOf('day')
 
@@ -557,10 +537,11 @@ class DateRangePicker {
     this.updateMonthsInView()
   }
 
-  setEndDate(endDate) {
-    if (typeof endDate === 'string') this.endDate = moment(endDate, this.locale.format)
-
-    if (typeof endDate === 'object') this.endDate = moment(endDate)
+  setEndDate(endDate?: moment.MomentInput) {
+    if (endDate) {
+      if (typeof endDate === 'string') this.endDate = moment(endDate, this.locale.format)
+      else this.endDate = moment(endDate)
+    }
 
     if (!this.timePicker) this.endDate = this.endDate.endOf('day')
 
@@ -589,14 +570,6 @@ class DateRangePicker {
     if (!this.isShowing) this.updateElement()
 
     this.updateMonthsInView()
-  }
-
-  isInvalidDate() {
-    return false
-  }
-
-  isCustomDate() {
-    return false
   }
 
   updateView() {
@@ -654,10 +627,15 @@ class DateRangePicker {
         this.rightCalendar.month = this.startDate.clone().date(2).add(1, 'month')
       }
     } else {
-      if (
-        this.leftCalendar.month.format('YYYY-MM') != this.startDate.format('YYYY-MM') &&
-        this.rightCalendar.month.format('YYYY-MM') != this.startDate.format('YYYY-MM')
-      ) {
+      if (this.leftCalendar.month && this.rightCalendar.month) {
+        if (
+          this.leftCalendar.month.format('YYYY-MM') != this.startDate.format('YYYY-MM') &&
+          this.rightCalendar.month.format('YYYY-MM') != this.startDate.format('YYYY-MM')
+        ) {
+          this.leftCalendar.month = this.startDate.clone().date(2)
+          this.rightCalendar.month = this.startDate.clone().date(2).add(1, 'month')
+        }
+      } else {
         this.leftCalendar.month = this.startDate.clone().date(2)
         this.rightCalendar.month = this.startDate.clone().date(2).add(1, 'month')
       }
@@ -677,13 +655,16 @@ class DateRangePicker {
     if (this.timePicker) {
       var hour, minute, second
       if (this.endDate) {
-        hour = parseInt(this.container.find('.left .hourselect').val(), 10)
-        minute = parseInt(this.container.find('.left .minuteselect').val(), 10)
+        hour = parseInt(this.container.find('.left .hourselect').val() as string, 10)
+        minute = parseInt(this.container.find('.left .minuteselect').val() as string, 10)
         if (isNaN(minute)) {
-          minute = parseInt(this.container.find('.left .minuteselect option:last').val(), 10)
+          minute = parseInt(
+            this.container.find('.left .minuteselect option:last').val() as string,
+            10
+          )
         }
         second = this.timePickerSeconds
-          ? parseInt(this.container.find('.left .secondselect').val(), 10)
+          ? parseInt(this.container.find('.left .secondselect').val() as string, 10)
           : 0
         if (!this.timePicker24Hour) {
           var ampm = this.container.find('.left .ampmselect').val()
@@ -691,13 +672,16 @@ class DateRangePicker {
           if (ampm === 'AM' && hour === 12) hour = 0
         }
       } else {
-        hour = parseInt(this.container.find('.right .hourselect').val(), 10)
-        minute = parseInt(this.container.find('.right .minuteselect').val(), 10)
+        hour = parseInt(this.container.find('.right .hourselect').val() as string, 10)
+        minute = parseInt(this.container.find('.right .minuteselect').val() as string, 10)
         if (isNaN(minute)) {
-          minute = parseInt(this.container.find('.right .minuteselect option:last').val(), 10)
+          minute = parseInt(
+            this.container.find('.right .minuteselect option:last').val() as string,
+            10
+          )
         }
         second = this.timePickerSeconds
-          ? parseInt(this.container.find('.right .secondselect').val(), 10)
+          ? parseInt(this.container.find('.right .secondselect').val() as string, 10)
           : 0
         if (!this.timePicker24Hour) {
           var ampm = this.container.find('.right .ampmselect').val()
@@ -705,8 +689,10 @@ class DateRangePicker {
           if (ampm === 'AM' && hour === 12) hour = 0
         }
       }
-      this.leftCalendar.month.hour(hour).minute(minute).second(second)
-      this.rightCalendar.month.hour(hour).minute(minute).second(second)
+
+      if (this.leftCalendar.month) this.leftCalendar.month.hour(hour).minute(minute).second(second)
+      if (this.rightCalendar.month)
+        this.rightCalendar.month.hour(hour).minute(minute).second(second)
     }
 
     this.renderCalendar('left')
@@ -719,17 +705,17 @@ class DateRangePicker {
     this.calculateChosenLabel()
   }
 
-  renderCalendar(side) {
+  renderCalendar(side: OpenDirection) {
     //
     // Build the matrix of dates that will populate the calendar
     //
 
     var calendar = side == 'left' ? this.leftCalendar : this.rightCalendar
-    var month = calendar.month.month()
-    var year = calendar.month.year()
-    var hour = calendar.month.hour()
-    var minute = calendar.month.minute()
-    var second = calendar.month.second()
+    var month = calendar.month!.month()
+    var year = calendar.month!.year()
+    var hour = calendar.month!.hour()
+    var minute = calendar.month!.minute()
+    var second = calendar.month!.second()
     var daysInMonth = moment([year, month]).daysInMonth()
     var firstDay = moment([year, month, 1])
     var lastDay = moment([year, month, daysInMonth])
@@ -739,12 +725,12 @@ class DateRangePicker {
     var dayOfWeek = firstDay.day()
 
     //initialize a 6 rows x 7 columns array for the calendar
-    var calendar = []
+    const calendarTable: CalendarTable = {}
     calendar.firstDay = firstDay
     calendar.lastDay = lastDay
 
     for (var i = 0; i < 6; i++) {
-      calendar[i] = []
+      calendarTable[i] = []
     }
 
     //populate the calendar with date objects
@@ -755,9 +741,8 @@ class DateRangePicker {
 
     var curDate = moment([lastYear, lastMonth, startDay, 12, minute, second])
 
-    var col, row
     for (
-      var i = 0, col = 0, row = 0;
+      let i = 0, col = 0, row = 0;
       i < 42;
       i++, col++, curDate = moment(curDate).add(24, 'hour')
     ) {
@@ -765,33 +750,33 @@ class DateRangePicker {
         col = 0
         row++
       }
-      calendar[row][col] = curDate.clone().hour(hour).minute(minute).second(second)
+      calendarTable[row][col] = curDate.clone().hour(hour).minute(minute).second(second)
       curDate.hour(12)
 
       if (
         this.minDate &&
-        calendar[row][col].format('YYYY-MM-DD') == this.minDate.format('YYYY-MM-DD') &&
-        calendar[row][col].isBefore(this.minDate) &&
+        calendarTable[row][col].format('YYYY-MM-DD') == this.minDate.format('YYYY-MM-DD') &&
+        calendarTable[row][col].isBefore(this.minDate) &&
         side == 'left'
       ) {
-        calendar[row][col] = this.minDate.clone()
+        calendarTable[row][col] = this.minDate.clone()
       }
 
       if (
         this.maxDate &&
-        calendar[row][col].format('YYYY-MM-DD') == this.maxDate.format('YYYY-MM-DD') &&
-        calendar[row][col].isAfter(this.maxDate) &&
+        calendarTable[row][col].format('YYYY-MM-DD') == this.maxDate.format('YYYY-MM-DD') &&
+        calendarTable[row][col].isAfter(this.maxDate) &&
         side == 'right'
       ) {
-        calendar[row][col] = this.maxDate.clone()
+        calendarTable[row][col] = this.maxDate.clone()
       }
     }
 
     //make the calendar object available to hoverDate/clickDate
     if (side == 'left') {
-      this.leftCalendar.calendar = calendar
+      this.leftCalendar.calendar = calendarTable
     } else {
-      this.rightCalendar.calendar = calendar
+      this.rightCalendar.calendar = calendarTable
     }
 
     //
@@ -800,11 +785,6 @@ class DateRangePicker {
 
     var minDate = side == 'left' ? this.minDate : this.startDate
     var maxDate = this.maxDate
-    var selected = side == 'left' ? this.startDate : this.endDate
-    var arrow =
-      this.locale.direction == 'ltr'
-        ? { left: 'chevron-left', right: 'chevron-right' }
-        : { left: 'chevron-right', right: 'chevron-left' }
 
     var html = '<table class="table-condensed">'
     html += '<thead>'
@@ -822,11 +802,12 @@ class DateRangePicker {
       html += '<th></th>'
     }
 
-    var dateHtml = this.locale.monthNames[calendar[1][1].month()] + calendar[1][1].format(' YYYY')
+    var dateHtml =
+      this.locale.monthNames[calendarTable[1][1].month()] + calendarTable[1][1].format(' YYYY')
 
     if (this.showDropdowns) {
-      var currentMonth = calendar[1][1].month()
-      var currentYear = calendar[1][1].year()
+      var currentMonth = calendarTable[1][1].month()
+      var currentYear = calendarTable[1][1].year()
       var maxYear = (maxDate && maxDate.year()) || this.maxYear
       var minYear = (minDate && minDate.year()) || this.minYear
       var inMinYear = currentYear == minYear
@@ -892,7 +873,7 @@ class DateRangePicker {
     if (this.showWeekNumbers || this.showISOWeekNumbers)
       html += '<th class="week">' + this.locale.weekLabel + '</th>'
 
-    $.each(this.locale.daysOfWeek, function (index, dayOfWeek) {
+    $.each(this.locale.daysOfWeek, function (_, dayOfWeek) {
       html += '<th>' + dayOfWeek + '</th>'
     })
 
@@ -913,56 +894,58 @@ class DateRangePicker {
       html += '<tr>'
 
       // add week number
-      if (this.showWeekNumbers) html += '<td class="week">' + calendar[row][0].week() + '</td>'
+      if (this.showWeekNumbers) html += '<td class="week">' + calendarTable[row][0].week() + '</td>'
       else if (this.showISOWeekNumbers)
-        html += '<td class="week">' + calendar[row][0].isoWeek() + '</td>'
+        html += '<td class="week">' + calendarTable[row][0].isoWeek() + '</td>'
 
-      for (var col = 0; col < 7; col++) {
-        var classes = []
+      for (let col = 0; col < 7; col++) {
+        const classes = []
 
         //highlight today's date
-        if (calendar[row][col].isSame(new Date(), 'day')) classes.push('today')
+        if (calendarTable[row][col].isSame(new Date(), 'day')) classes.push('today')
 
         //highlight weekends
-        if (calendar[row][col].isoWeekday() > 5) classes.push('weekend')
+        if (calendarTable[row][col].isoWeekday() > 5) classes.push('weekend')
 
         //grey out the dates in other months displayed at beginning and end of this calendar
-        if (calendar[row][col].month() != calendar[1][1].month()) classes.push('off', 'ends')
+        if (calendarTable[row][col].month() != calendarTable[1][1].month())
+          classes.push('off', 'ends')
 
         //don't allow selection of dates before the minimum date
-        if (this.minDate && calendar[row][col].isBefore(this.minDate, 'day'))
+        if (this.minDate && calendarTable[row][col].isBefore(this.minDate, 'day'))
           classes.push('off', 'disabled')
 
         //don't allow selection of dates after the maximum date
-        if (maxDate && calendar[row][col].isAfter(maxDate, 'day')) classes.push('off', 'disabled')
+        if (maxDate && calendarTable[row][col].isAfter(maxDate, 'day'))
+          classes.push('off', 'disabled')
 
         //don't allow selection of date if a custom function decides it's invalid
-        if (this.isInvalidDate(calendar[row][col])) classes.push('off', 'disabled')
+        if (this.isInvalidDate(calendarTable[row][col])) classes.push('off', 'disabled')
 
         //highlight the currently selected start date
-        if (calendar[row][col].format('YYYY-MM-DD') == this.startDate.format('YYYY-MM-DD'))
+        if (calendarTable[row][col].format('YYYY-MM-DD') == this.startDate.format('YYYY-MM-DD'))
           classes.push('active', 'start-date')
 
         //highlight the currently selected end date
         if (
           this.endDate != null &&
-          calendar[row][col].format('YYYY-MM-DD') == this.endDate.format('YYYY-MM-DD')
+          calendarTable[row][col].format('YYYY-MM-DD') == this.endDate.format('YYYY-MM-DD')
         )
           classes.push('active', 'end-date')
 
         //highlight dates in-between the selected dates
         if (
           this.endDate != null &&
-          calendar[row][col] > this.startDate &&
-          calendar[row][col] < this.endDate
+          calendarTable[row][col] > this.startDate &&
+          calendarTable[row][col] < this.endDate
         )
           classes.push('in-range')
 
         //apply custom classes for this date
-        var isCustom = this.isCustomDate(calendar[row][col])
+        const isCustom = this.isCustomDate(calendarTable[row][col])
         if (isCustom !== false) {
           if (typeof isCustom === 'string') classes.push(isCustom)
-          else Array.prototype.push.apply(classes, isCustom)
+          else Array.prototype.push.apply(classes, isCustom )
         }
 
         var cname = '',
@@ -982,7 +965,7 @@ class DateRangePicker {
           'c' +
           col +
           '">' +
-          calendar[row][col].date() +
+          calendarTable[row][col].date() +
           '</td>'
       }
       html += '</tr>'
@@ -994,12 +977,12 @@ class DateRangePicker {
     this.container.find('.drp-calendar.' + side + ' .calendar-table').html(html)
   }
 
-  renderTimePicker(side) {
+  renderTimePicker(side: OpenDirection) {
     // Don't bother updating the time picker if it's currently disabled
     // because an end date hasn't been clicked yet
     if (side == 'right' && !this.endDate) return
 
-    var html,
+    let html,
       selected,
       minDate,
       maxDate = this.maxDate
@@ -1023,17 +1006,17 @@ class DateRangePicker {
         selected.hour(
           !isNaN(selected.hour())
             ? selected.hour()
-            : timeSelector.find('.hourselect option:selected').val()
+            : parseInt(timeSelector.find('.hourselect option:selected').val() as string, 10)
         )
         selected.minute(
           !isNaN(selected.minute())
             ? selected.minute()
-            : timeSelector.find('.minuteselect option:selected').val()
+            : parseInt(timeSelector.find('.minuteselect option:selected').val() as string, 10)
         )
         selected.second(
           !isNaN(selected.second())
             ? selected.second()
-            : timeSelector.find('.secondselect option:selected').val()
+            : parseInt(timeSelector.find('.secondselect option:selected').val() as string, 10)
         )
 
         if (!this.timePicker24Hour) {
@@ -1060,14 +1043,14 @@ class DateRangePicker {
     for (var i = start; i <= end; i++) {
       var i_in_24 = i
       if (!this.timePicker24Hour)
-        i_in_24 = selected.hour() >= 12 ? (i == 12 ? 12 : i + 12) : i == 12 ? 0 : i
+        i_in_24 = selected!.hour() >= 12 ? (i == 12 ? 12 : i + 12) : i == 12 ? 0 : i
 
-      var time = selected.clone().hour(i_in_24)
+      var time = selected!.clone().hour(i_in_24)
       var disabled = false
       if (minDate && time.minute(59).isBefore(minDate)) disabled = true
       if (maxDate && time.minute(0).isAfter(maxDate)) disabled = true
 
-      if (i_in_24 == selected.hour() && !disabled) {
+      if (i_in_24 == selected!.hour() && !disabled) {
         html += '<option value="' + i + '" selected="selected">' + i + '</option>'
       } else if (disabled) {
         html += '<option value="' + i + '" disabled="disabled" class="disabled">' + i + '</option>'
@@ -1086,13 +1069,13 @@ class DateRangePicker {
 
     for (var i = 0; i < 60; i += this.timePickerIncrement) {
       var padded = i < 10 ? '0' + i : i
-      var time = selected.clone().minute(i)
+      var time = selected!.clone().minute(i)
 
       var disabled = false
       if (minDate && time.second(59).isBefore(minDate)) disabled = true
       if (maxDate && time.second(0).isAfter(maxDate)) disabled = true
 
-      if (selected.minute() == i && !disabled) {
+      if (selected!.minute() == i && !disabled) {
         html += '<option value="' + i + '" selected="selected">' + padded + '</option>'
       } else if (disabled) {
         html +=
@@ -1113,13 +1096,13 @@ class DateRangePicker {
 
       for (var i = 0; i < 60; i++) {
         var padded = i < 10 ? '0' + i : i
-        var time = selected.clone().second(i)
+        var time = selected!.clone().second(i)
 
         var disabled = false
         if (minDate && time.isBefore(minDate)) disabled = true
         if (maxDate && time.isAfter(maxDate)) disabled = true
 
-        if (selected.second() == i && !disabled) {
+        if (selected!.second() == i && !disabled) {
           html += '<option value="' + i + '" selected="selected">' + padded + '</option>'
         } else if (disabled) {
           html +=
@@ -1142,13 +1125,13 @@ class DateRangePicker {
       var am_html = ''
       var pm_html = ''
 
-      if (minDate && selected.clone().hour(12).minute(0).second(0).isBefore(minDate))
+      if (minDate && selected!.clone().hour(12).minute(0).second(0).isBefore(minDate))
         am_html = ' disabled="disabled" class="disabled"'
 
-      if (maxDate && selected.clone().hour(0).minute(0).second(0).isAfter(maxDate))
+      if (maxDate && selected!.clone().hour(0).minute(0).second(0).isAfter(maxDate))
         pm_html = ' disabled="disabled" class="disabled"'
 
-      if (selected.hour() >= 12) {
+      if (selected!.hour() >= 12) {
         html +=
           '<option value="AM"' +
           am_html +
@@ -1280,13 +1263,11 @@ class DateRangePicker {
     }
   }
 
-  show(e) {
+  show(_e: Event) {
     if (this.isShowing) return
 
     // Create a click proxy that is private to this instance of datepicker, for unbinding
-    this._outsideClickProxy = $.proxy(function (e) {
-      this.outsideClick(e)
-    }, this)
+    this._outsideClickProxy = this.outsideClick.bind(this)
 
     // Bind global datepicker mousedown for hiding and
     $(document)
@@ -1299,12 +1280,7 @@ class DateRangePicker {
       .on('focusin.daterangepicker', this._outsideClickProxy)
 
     // Reposition the picker if the window is resized while it's open
-    $(window).on(
-      'resize.daterangepicker',
-      $.proxy(function (e) {
-        this.move(e)
-      }, this)
-    )
+    $(window).on('resize.daterangepicker', this.move.bind(this))
 
     this.oldStartDate = this.startDate.clone()
     this.oldEndDate = this.endDate.clone()
@@ -1317,13 +1293,13 @@ class DateRangePicker {
     this.isShowing = true
   }
 
-  hide(e) {
+  hide(_e: Event) {
     if (!this.isShowing) return
 
     //incomplete date selection, revert to last values
     if (!this.endDate) {
-      this.startDate = this.oldStartDate.clone()
-      this.endDate = this.oldEndDate.clone()
+      this.startDate = this.oldStartDate!.clone()
+      this.endDate = this.oldEndDate!.clone()
     }
 
     //if a new date range was selected, invoke the user callback function
@@ -1340,16 +1316,16 @@ class DateRangePicker {
     this.isShowing = false
   }
 
-  toggle(e) {
+  toggle(e: Event) {
     if (this.isShowing) {
-      this.hide()
+      this.hide(e)
     } else {
-      this.show()
+      this.show(e)
     }
   }
 
-  outsideClick(e) {
-    var target = $(e.target)
+  outsideClick(e: Event) {
+    var target = $(e.target!)
     // if the page is clicked anywhere except within the daterangerpicker/button
     // itself then call this.hide()
     if (
@@ -1375,13 +1351,15 @@ class DateRangePicker {
     this.element.trigger('hideCalendar.daterangepicker', this)
   }
 
-  clickRange(e) {
-    var label = e.target.getAttribute('data-range-key')
-    this.chosenLabel = label
+  clickRange(e: Event) {
+    const label = (e.target! as HTMLElement).getAttribute('data-range-key')
+    const ranges = label || ''
+
+    this.chosenLabel = label ? label : undefined
     if (label == this.locale.customRangeLabel) {
       this.showCalendars()
     } else {
-      var dates = this.ranges[label]
+      var dates = this.ranges[ranges]
       this.startDate = dates[0]
       this.endDate = dates[1]
 
@@ -1391,60 +1369,60 @@ class DateRangePicker {
       }
 
       if (!this.alwaysShowCalendars) this.hideCalendars()
-      this.clickApply()
+      this.clickApply(e)
     }
   }
 
-  clickPrev(e) {
-    var cal = $(e.target).parents('.drp-calendar')
+  clickPrev(e: Event) {
+    var cal = $(e.target!).parents('.drp-calendar')
     if (cal.hasClass('left')) {
-      this.leftCalendar.month.subtract(1, 'month')
-      if (this.linkedCalendars) this.rightCalendar.month.subtract(1, 'month')
+      this.leftCalendar.month!.subtract(1, 'month')
+      if (this.linkedCalendars) this.rightCalendar.month!.subtract(1, 'month')
     } else {
-      this.rightCalendar.month.subtract(1, 'month')
+      this.rightCalendar.month!.subtract(1, 'month')
     }
     this.updateCalendars()
   }
 
-  clickNext(e) {
-    var cal = $(e.target).parents('.drp-calendar')
+  clickNext(e: Event) {
+    var cal = $(e.target!).parents('.drp-calendar')
     if (cal.hasClass('left')) {
-      this.leftCalendar.month.add(1, 'month')
+      this.leftCalendar.month!.add(1, 'month')
     } else {
-      this.rightCalendar.month.add(1, 'month')
-      if (this.linkedCalendars) this.leftCalendar.month.add(1, 'month')
+      this.rightCalendar.month!.add(1, 'month')
+      if (this.linkedCalendars) this.leftCalendar.month!.add(1, 'month')
     }
     this.updateCalendars()
   }
 
-  hoverDate(e) {
+  hoverDate(e: Event) {
     //ignore dates that can't be selected
-    if (!$(e.target).hasClass('available')) return
+    if (!$(e.target!).hasClass('available')) return
 
-    var title = $(e.target).attr('data-title')
-    var row = title.substr(1, 1)
-    var col = title.substr(3, 1)
-    var cal = $(e.target).parents('.drp-calendar')
+    var title = $(e.target!).attr('data-title') || ''
+    var row = title.substring(1, 1)
+    var col = title.substring(3, 1)
+    var cal = $(e.target!).parents('.drp-calendar')
     var date = cal.hasClass('left')
-      ? this.leftCalendar.calendar[row][col]
-      : this.rightCalendar.calendar[row][col]
+      ? this.leftCalendar.calendar![row][parseInt(col, 10)]
+      : this.rightCalendar.calendar![row][parseInt(col, 10)]
 
     //highlight the dates between the start date and the date being hovered as a potential end date
     var leftCalendar = this.leftCalendar
     var rightCalendar = this.rightCalendar
     var startDate = this.startDate
     if (!this.endDate) {
-      this.container.find('.drp-calendar tbody td').each(function (index, el) {
+      this.container.find('.drp-calendar tbody td').each(function (_index, el) {
         //skip week numbers, only look at dates
         if ($(el).hasClass('week')) return
 
-        var title = $(el).attr('data-title')
-        var row = title.substr(1, 1)
-        var col = title.substr(3, 1)
+        var title = $(el).attr('data-title') || ''
+        var row = title.substring(1, 1)
+        var col = title.substring(3, 1)
         var cal = $(el).parents('.drp-calendar')
         var dt = cal.hasClass('left')
-          ? leftCalendar.calendar[row][col]
-          : rightCalendar.calendar[row][col]
+          ? leftCalendar.calendar![row][parseInt(col, 10)]
+          : rightCalendar.calendar![row][parseInt(col, 10)]
 
         if ((dt.isAfter(startDate) && dt.isBefore(date)) || dt.isSame(date, 'day')) {
           $(el).addClass('in-range')
@@ -1455,16 +1433,16 @@ class DateRangePicker {
     }
   }
 
-  clickDate(e) {
-    if (!$(e.target).hasClass('available')) return
+  clickDate(e: Event) {
+    if (!$(e.target!).hasClass('available')) return
 
-    var title = $(e.target).attr('data-title')
-    var row = title.substr(1, 1)
-    var col = title.substr(3, 1)
-    var cal = $(e.target).parents('.drp-calendar')
+    var title = $(e.target!).attr('data-title') || ''
+    var row = title.substring(1, 1)
+    var col = title.substring(3, 1)
+    var cal = $(e.target!).parents('.drp-calendar')
     var date = cal.hasClass('left')
-      ? this.leftCalendar.calendar[row][col]
-      : this.rightCalendar.calendar[row][col]
+      ? this.leftCalendar.calendar![row][parseInt(col, 10)]
+      : this.rightCalendar.calendar![row][parseInt(col, 10)]
 
     //
     // this function needs to do a few things:
@@ -1478,18 +1456,21 @@ class DateRangePicker {
     if (this.endDate || date.isBefore(this.startDate, 'day')) {
       //picking start
       if (this.timePicker) {
-        var hour = parseInt(this.container.find('.left .hourselect').val(), 10)
+        var hour = parseInt(this.container.find('.left .hourselect').val() as string, 10)
         if (!this.timePicker24Hour) {
           var ampm = this.container.find('.left .ampmselect').val()
           if (ampm === 'PM' && hour < 12) hour += 12
           if (ampm === 'AM' && hour === 12) hour = 0
         }
-        var minute = parseInt(this.container.find('.left .minuteselect').val(), 10)
+        var minute = parseInt(this.container.find('.left .minuteselect').val() as string, 10)
         if (isNaN(minute)) {
-          minute = parseInt(this.container.find('.left .minuteselect option:last').val(), 10)
+          minute = parseInt(
+            this.container.find('.left .minuteselect option:last').val() as string,
+            10
+          )
         }
         var second = this.timePickerSeconds
-          ? parseInt(this.container.find('.left .secondselect').val(), 10)
+          ? parseInt(this.container.find('.left .secondselect').val() as string, 10)
           : 0
         date = date.clone().hour(hour).minute(minute).second(second)
       }
@@ -1502,18 +1483,21 @@ class DateRangePicker {
     } else {
       // picking end
       if (this.timePicker) {
-        var hour = parseInt(this.container.find('.right .hourselect').val(), 10)
+        var hour = parseInt(this.container.find('.right .hourselect').val() as string, 10)
         if (!this.timePicker24Hour) {
           var ampm = this.container.find('.right .ampmselect').val()
           if (ampm === 'PM' && hour < 12) hour += 12
           if (ampm === 'AM' && hour === 12) hour = 0
         }
-        var minute = parseInt(this.container.find('.right .minuteselect').val(), 10)
+        var minute = parseInt(this.container.find('.right .minuteselect').val() as string, 10)
         if (isNaN(minute)) {
-          minute = parseInt(this.container.find('.right .minuteselect option:last').val(), 10)
+          minute = parseInt(
+            this.container.find('.right .minuteselect option:last').val() as string,
+            10
+          )
         }
         var second = this.timePickerSeconds
-          ? parseInt(this.container.find('.right .secondselect').val(), 10)
+          ? parseInt(this.container.find('.right .secondselect').val() as string, 10)
           : 0
         date = date.clone().hour(hour).minute(minute).second(second)
       }
@@ -1576,32 +1560,32 @@ class DateRangePicker {
           .addClass('active')
           .attr('data-range-key')
       } else {
-        this.chosenLabel = null
+        this.chosenLabel = undefined
       }
       this.showCalendars()
     }
   }
 
-  clickApply(e) {
-    this.hide()
+  clickApply(_e: Event) {
+    this.hide(_e)
     this.element.trigger('apply.daterangepicker', this)
   }
 
-  clickCancel(e) {
-    this.startDate = this.oldStartDate
-    this.endDate = this.oldEndDate
-    this.hide()
+  clickCancel(_e: Event) {
+    this.startDate = this.oldStartDate!
+    this.endDate = this.oldEndDate!
+    this.hide(_e)
     this.element.trigger('cancel.daterangepicker', this)
   }
 
-  monthOrYearChanged(e) {
-    var isLeft = $(e.target).closest('.drp-calendar').hasClass('left'),
+  monthOrYearChanged(e: Event) {
+    const isLeft = $(e.target!).closest('.drp-calendar').hasClass('left'),
       leftOrRight = isLeft ? 'left' : 'right',
       cal = this.container.find('.drp-calendar.' + leftOrRight)
 
     // Month must be Number for new moment versions
-    var month = parseInt(cal.find('.monthselect').val(), 10)
-    var year = cal.find('.yearselect').val()
+    let month = parseInt(cal.find('.monthselect').val() as string, 10)
+    let year = parseInt(cal.find('.yearselect').val() as string, 10)
 
     if (!isLeft) {
       if (
@@ -1634,27 +1618,29 @@ class DateRangePicker {
     }
 
     if (isLeft) {
-      this.leftCalendar.month.month(month).year(year)
+      this.leftCalendar.month!.month(month).year(year)
       if (this.linkedCalendars)
-        this.rightCalendar.month = this.leftCalendar.month.clone().add(1, 'month')
+        this.rightCalendar.month = this.leftCalendar.month!.clone().add(1, 'month')
     } else {
-      this.rightCalendar.month.month(month).year(year)
+      this.rightCalendar.month!.month(month).year(year)
       if (this.linkedCalendars)
-        this.leftCalendar.month = this.rightCalendar.month.clone().subtract(1, 'month')
+        this.leftCalendar.month = this.rightCalendar.month!.clone().subtract(1, 'month')
     }
     this.updateCalendars()
   }
 
-  timeChanged(e) {
-    var cal = $(e.target).closest('.drp-calendar'),
+  timeChanged(e: Event) {
+    var cal = $(e.target!).closest('.drp-calendar'),
       isLeft = cal.hasClass('left')
 
-    var hour = parseInt(cal.find('.hourselect').val(), 10)
-    var minute = parseInt(cal.find('.minuteselect').val(), 10)
+    var hour = parseInt(cal.find('.hourselect').val() as string, 10)
+    var minute = parseInt(cal.find('.minuteselect').val() as string, 10)
     if (isNaN(minute)) {
-      minute = parseInt(cal.find('.minuteselect option:last').val(), 10)
+      minute = parseInt(cal.find('.minuteselect option:last').val() as string, 10)
     }
-    var second = this.timePickerSeconds ? parseInt(cal.find('.secondselect').val(), 10) : 0
+    var second = this.timePickerSeconds
+      ? parseInt(cal.find('.secondselect').val() as string, 10)
+      : 0
 
     if (!this.timePicker24Hour) {
       var ampm = cal.find('.ampmselect').val()
@@ -1721,18 +1707,18 @@ class DateRangePicker {
     this.updateView()
   }
 
-  keydown(e) {
+  keydown(e: KeyboardEvent) {
     //hide on tab or enter
-    if (e.keyCode === 9 || e.keyCode === 13) {
-      this.hide()
+    if (e.code === "Tab" || e.code === "Enter") {
+      this.hide(e)
     }
 
     //hide on esc and prevent propagation
-    if (e.keyCode === 27) {
+    if (e.code === "Escape") {
       e.preventDefault()
       e.stopPropagation()
 
-      this.hide()
+      this.hide(e)
     }
   }
 
@@ -1755,7 +1741,10 @@ class DateRangePicker {
   }
 }
 
-$.fn.daterangepicker = function (options?: DateRangePickerOptions, callback?: DateRangePickerCallback) {
+$.fn.daterangepicker = function (
+  options?: DateRangePickerOptions,
+  callback?: DateRangePickerCallback
+) {
   var implementOptions = $.extend(true, {}, $.fn.daterangepicker.defaultOptions, options)
   this.each(function () {
     var el = $(this)
