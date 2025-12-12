@@ -8,6 +8,7 @@ import { createSSRApp, h } from 'vue'
 import type { DefineComponent } from 'vue'
 import { createInertiaApp } from '@inertiajs/vue3'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
+import Antd from 'ant-design-vue';
 import DataTable from 'datatables.net-vue3'
 import DataTablesCore from 'datatables.net-dt';
 import 'datatables.net-responsive-dt';
@@ -43,6 +44,7 @@ createInertiaApp({
     
     createSSRApp({ render: () => h(App, props) })
       .use(FloatingVue)
+      .use(Antd)
       .use(plugin)
       .mount(el)
   },
