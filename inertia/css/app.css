@@ -101,6 +101,16 @@
     @apply transition-all duration-500 py-2 px-3 block w-full;
   }
 
+  .form-control-sm {
+    @apply text-[0.8rem] py-1 px-[0.8rem] h-auto;
+    @apply min-h-[1.85rem];
+  }
+
+  .form-select {
+    @apply bg-no-repeat;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  }
+
   .form-check {
     @apply block pl-6;
   }

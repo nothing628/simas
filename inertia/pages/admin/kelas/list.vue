@@ -43,7 +43,20 @@
 
                 <div class="card">
                     <FilterKelas />
-                    Kelas List
+
+                    <div class="card-body p-0 py-4">
+                        <div class="overflow-x-auto">
+                            <div class="row">
+                                <div class="px-4 flex-none w-full md:w-1/2">
+                                    <PaginationCount />
+                                </div>
+                                <div class="px-4 flex-none w-full md:w-1/2">
+                                    <FilterSearch />
+                                </div>
+                            </div>
+                            Kelas List
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -57,4 +70,6 @@ import Sidebar from '~/components/Sidebar.vue';
 import ContentHead from '~/components/ContentHead.vue';
 import Breadcrumb from '~/components/Breadcrumb.vue';
 import FilterKelas from '~/components/kelas/FilterKelas.vue';
+import FilterSearch from '~/components/kelas/FilterSearch.vue';
+import PaginationCount from '~/components/kelas/PaginationCount.vue';
 </script>
