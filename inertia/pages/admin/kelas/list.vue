@@ -54,7 +54,48 @@
                                     <FilterSearch />
                                 </div>
                             </div>
-                            Kelas List
+
+                            <a-table class="w-full m-0 text-gray-600 border-gray-400 datatable thead-light" :columns="columns" :data-source="data"
+                                :row-selection="rowSelection">
+                                <template #bodyCell="{ column, record }">
+                                    <template v-if="column.key === 'ID'">
+                                        <div>
+                                            <a href="javascript:void(0);" class="link-primary">{{ record.ID }}</a>
+                                        </div>
+                                    </template>
+                                    <template v-if="column.key === 'Status'">
+                                        <span :class="record.StatusClass" class="inline-flex items-center"><i
+                                                class="ti ti-circle-filled fs-5 me-1"></i>{{ record.Status }}</span>
+                                    </template>
+                                    <template v-if="column.key === 'action'">
+                                        <div class="d-flex align-items-center">
+                                            <VDropdown placement="bottom-end" class="relative">
+                                                <a href="javascript:void(0);"
+                                                    class="btn btn-white btn-icon btn-sm flex items-center justify-center rounded-full p-0"
+                                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="ti ti-dots-vertical fs-14"></i>
+                                                </a>
+                                                <template #popper>
+                                                    <ul class="dropdown-menu dropdown-menu-right p-3">
+                                                        <li>
+                                                            <a class="dropdown-item rounded-1"
+                                                                href="javascript:void(0);" data-bs-toggle="modal"
+                                                                data-bs-target="#edit_class"><i
+                                                                    class="ti ti-edit-circle me-2"></i>Edit</a>
+                                                        </li>
+                                                        <li>
+                                                            <a class="dropdown-item rounded-1"
+                                                                href="javascript:void(0);" data-bs-toggle="modal"
+                                                                data-bs-target="#delete-modal"><i
+                                                                    class="ti ti-trash-x me-2"></i>Delete</a>
+                                                        </li>
+                                                    </ul>
+                                                </template>
+                                            </VDropdown>
+                                        </div>
+                                    </template>
+                                </template>
+                            </a-table>
                         </div>
                     </div>
                 </div>
@@ -72,4 +113,191 @@ import Breadcrumb from '~/components/Breadcrumb.vue';
 import FilterKelas from '~/components/kelas/FilterKelas.vue';
 import FilterSearch from '~/components/kelas/FilterSearch.vue';
 import PaginationCount from '~/components/kelas/PaginationCount.vue';
+import { Dropdown as VDropdown } from '~/components/floating-vue'
+
+const columns = [
+    {
+        sorter: false,
+    },
+    {
+        title: "ID",
+        dataIndex: "ID",
+        key: "ID",
+        sorter: {
+            compare: (a: any, b: any) => {
+                a = a.ID.toLowerCase();
+                b = b.ID.toLowerCase();
+                return a > b ? -1 : b > a ? 1 : 0;
+            },
+        },
+    },
+    {
+        title: "Class",
+        dataIndex: "Class",
+        sorter: {
+            compare: (a: any, b: any) => {
+                a = a.Class.toLowerCase();
+                b = b.Class.toLowerCase();
+                return a > b ? -1 : b > a ? 1 : 0;
+            },
+        },
+    },
+    {
+        title: "Section",
+        dataIndex: "Section",
+        sorter: {
+            compare: (a: any, b: any) => {
+                a = a.Section.toLowerCase();
+                b = b.Section.toLowerCase();
+                return a > b ? -1 : b > a ? 1 : 0;
+            },
+        },
+    },
+    {
+        title: "No of Students",
+        dataIndex: "NoofStudents",
+        sorter: {
+            compare: (a: any, b: any) => {
+                a = a.NoofStudents.toLowerCase();
+                b = b.NoofStudents.toLowerCase();
+                return a > b ? -1 : b > a ? 1 : 0;
+            },
+        },
+    },
+    {
+        title: "No of Subjects",
+        dataIndex: "NoofSubjects",
+        sorter: {
+            compare: (a: any, b: any) => {
+                a = a.NoofSubjects.toLowerCase();
+                b = b.NoofSubjects.toLowerCase();
+                return a > b ? -1 : b > a ? 1 : 0;
+            },
+        },
+    },
+    {
+        title: "Status",
+        dataIndex: "Status",
+        key: "Status",
+        sorter: {
+            compare: (a: any, b: any) => {
+                a = a.Status.toLowerCase();
+                b = b.Status.toLowerCase();
+                return a > b ? -1 : b > a ? 1 : 0;
+            },
+        },
+    },
+    {
+        title: "Action",
+        key: "action",
+        sorter: true,
+    },
+];
+const data = [
+    {
+        key: "1",
+        ID: "C138038",
+        Class: "I",
+        Section: "A",
+        NoofStudents: "30",
+        NoofSubjects: "3",
+        StatusClass: "badge badge-soft-success",
+        Status: "Active",
+    },
+    {
+        key: "2",
+        ID: "C138037",
+        Class: "I",
+        Section: "B",
+        NoofStudents: "25",
+        NoofSubjects: "3",
+        StatusClass: "badge badge-soft-success",
+        Status: "Active",
+    },
+    {
+        key: "3",
+        ID: "C138036",
+        Class: "II",
+        Section: "A",
+        NoofStudents: "40",
+        NoofSubjects: "3",
+        StatusClass: "badge badge-soft-success",
+        Status: "Active",
+    },
+    {
+        key: "4",
+        ID: "C138035",
+        Class: "II",
+        Section: "B",
+        NoofStudents: "35",
+        NoofSubjects: "3",
+        StatusClass: "badge badge-soft-success",
+        Status: "Active",
+    },
+    {
+        key: "5",
+        ID: "C138034",
+        Class: "II",
+        Section: "C",
+        NoofStudents: "25",
+        NoofSubjects: "3",
+        StatusClass: "badge badge-soft-danger",
+        Status: "Inactive",
+    },
+    {
+        key: "6",
+        ID: "C138033",
+        Class: "III",
+        Section: "A",
+        NoofStudents: "30",
+        NoofSubjects: "3",
+        StatusClass: "badge badge-soft-success",
+        Status: "Active",
+    },
+    {
+        key: "7",
+        ID: "C138032",
+        Class: "III",
+        Section: "B",
+        NoofStudents: "25",
+        NoofSubjects: "5",
+        StatusClass: "badge badge-soft-success",
+        Status: "Active",
+    },
+    {
+        key: "8",
+        ID: "C138031",
+        Class: "IV",
+        Section: "A",
+        NoofStudents: "20",
+        NoofSubjects: "5",
+        StatusClass: "badge badge-soft-success",
+        Status: "Active",
+    },
+    {
+        key: "9",
+        ID: "C138030",
+        Class: "IV",
+        Section: "B",
+        NoofStudents: "30",
+        NoofSubjects: "5",
+        StatusClass: "badge badge-soft-danger",
+        Status: "Inactive",
+    },
+    {
+        key: "10",
+        ID: "C138029",
+        Class: "V",
+        Section: "A",
+        NoofStudents: "35",
+        NoofSubjects: "5",
+        StatusClass: "badge badge-soft-success",
+        Status: "Active",
+    },
+];
+const rowSelection = {
+    onChange: () => { },
+    onSelect: () => { },
+    onSelectAll: () => { },
+};
 </script>
