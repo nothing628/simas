@@ -32,48 +32,48 @@
   --color-gray-900: #202c4b;
 
   /* Info */
-  --color-info-100: #E7F1FC;
-  --color-info-200: #CFE2FA;
-  --color-info-300: #B8D4F7;
-  --color-info-400: #A0C6F4;
-  --color-info-500: #88B8F2;
-  --color-info-600: #70A9EF;
-  --color-info-700: #589BEC;
-  --color-info-800: #418DE9;
-  --color-info-900: #1170E4;
+  --color-info-100: #e7f1fc;
+  --color-info-200: #cfe2fa;
+  --color-info-300: #b8d4f7;
+  --color-info-400: #a0c6f4;
+  --color-info-500: #88b8f2;
+  --color-info-600: #70a9ef;
+  --color-info-700: #589bec;
+  --color-info-800: #418de9;
+  --color-info-900: #1170e4;
 
   /* Success */
-  --color-success-100: #E8F9E8;
-  --color-success-200: #D1F2D1;
-  --color-success-300: #BAECB9;
-  --color-success-400: #A3E5A2;
-  --color-success-500: #8DDF8B;
-  --color-success-600: #76D874;
-  --color-success-700: #5FD25D;
-  --color-success-800: #48CB45;
-  --color-success-900: #1ABE17;
+  --color-success-100: #e8f9e8;
+  --color-success-200: #d1f2d1;
+  --color-success-300: #baecb9;
+  --color-success-400: #a3e5a2;
+  --color-success-500: #8ddf8b;
+  --color-success-600: #76d874;
+  --color-success-700: #5fd25d;
+  --color-success-800: #48cb45;
+  --color-success-900: #1abe17;
 
   /* Danger */
-  --color-danger-100: #FDE9ED;
-  --color-danger-200: #FAD4DA;
-  --color-danger-300: #F8BEC8;
-  --color-danger-400: #F6A8B5;
-  --color-danger-500: #F493A3;
-  --color-danger-600: #F17D90;
-  --color-danger-700: #EF677E;
-  --color-danger-800: #ED516B;
-  --color-danger-900: #E82646;
+  --color-danger-100: #fde9ed;
+  --color-danger-200: #fad4da;
+  --color-danger-300: #f8bec8;
+  --color-danger-400: #f6a8b5;
+  --color-danger-500: #f493a3;
+  --color-danger-600: #f17d90;
+  --color-danger-700: #ef677e;
+  --color-danger-800: #ed516b;
+  --color-danger-900: #e82646;
 
   /* Warning */
-  --color-warning-100: #FEF8EA;
-  --color-warning-200: #FDF1D6;
-  --color-warning-300: #FDE9C1;
-  --color-warning-400: #FCE2AD;
-  --color-warning-500: #FBDB98;
-  --color-warning-600: #FAD483;
-  --color-warning-700: #F9CD6F;
-  --color-warning-800: #F9C55A;
-  --color-warning-900: #F7B731;
+  --color-warning-100: #fef8ea;
+  --color-warning-200: #fdf1d6;
+  --color-warning-300: #fde9c1;
+  --color-warning-400: #fce2ad;
+  --color-warning-500: #fbdb98;
+  --color-warning-600: #fad483;
+  --color-warning-700: #f9cd6f;
+  --color-warning-800: #f9c55a;
+  --color-warning-900: #f7b731;
 }
 
 @layer base {
@@ -370,5 +370,66 @@
   }
   .badge.badge-soft-info {
     @apply text-info-900 bg-info-900/10;
+  }
+
+  .ant-table-thead .ant-table-cell {
+    color: #1f2020;
+    font-size: 13px;
+    font-weight: 600 !important;
+    padding: 8px 29px 8px 16px !important;
+    background: #f7f8f9 !important;
+  }
+
+  .ant-table-cell {
+    @apply text-gray-900;
+    background: #fff !important;
+    border-bottom: 1px solid #e2e4e6 !important;
+  }
+
+  .ant-table-cell .ant-table-column-sort {
+    @apply text-gray-900;
+    background: #fff !important;
+    border-bottom: 1px solid #e2e4e6 !important;
+  }
+
+  .anticon.anticon-caret-up.ant-table-column-sorter-up {
+    color: #788585;
+  }
+  .anticon.anticon-caret-down.ant-table-column-sorter-down {
+    color: #788585;
+  }
+  .ant-tooltip {
+    display: none;
+  }
+  .ant-table-content {
+    border: 1px solid #e2e4e6;
+  }
+  .ant-table .ant-table-selection .ant-checkbox-checked .ant-checkbox-inner {
+    background-color: #000000;
+    border: 0px solid #b9b9c3;
+  }
+  .ant-table-tbody > tr.ant-table-row-selected > td {
+    background: transparent !important;
+  }
+  .ant-table-cell.ant-table-cell-row-hover {
+    background: transparent !important;
+  }
+  .ant-table-tbody tr .ant-table-cell.ant-table-column-sort {
+    background: transparent !important;
+  }
+  .ant-table-cell.ant-table-column-sort.ant-table-cell-row-hover {
+    background: transparent !important;
+  }
+  .ant-table .ant-table-container .ant-table-content .ant-table-thead {
+    font-family: 'Roboto', sans-serif;
+  }
+  .ant-table .ant-table-container .ant-table-content .ant-table-tbody {
+    font-family: 'Roboto', sans-serif;
+  }
+  .ant-picker-suffix span {
+    display: none;
+  }
+  .ant-picker-dropdown {
+    z-index: 1055 !important;
   }
 }
