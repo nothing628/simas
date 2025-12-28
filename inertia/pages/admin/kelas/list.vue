@@ -65,7 +65,7 @@
                                     </template>
                                     <template v-if="column.key === 'Status'">
                                         <span :class="record.StatusClass" class="inline-flex items-center"><i
-                                                class="ti ti-circle-filled fs-5 me-1"></i>{{ record.Status }}</span>
+                                                class="ti ti-circle-filled text-[5px] mr-1"></i>{{ record.Status }}</span>
                                     </template>
                                     <template v-if="column.key === 'action'">
                                         <div class="d-flex align-items-center">

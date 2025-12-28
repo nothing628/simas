@@ -354,7 +354,7 @@
   }
 
   .badge {
-    @apply inline-block font-semibold text-center text-xs capitalize leading-none;
+    @apply inline-block font-semibold text-center text-[0.65rem] capitalize leading-none;
     @apply py-1 px-2 rounded-sm whitespace-nowrap align-baseline;
     letter-spacing: 0.5px;
   }
@@ -370,66 +370,5 @@
   }
   .badge.badge-soft-info {
     @apply text-info-900 bg-info-900/10;
-  }
-
-  .ant-table-thead .ant-table-cell {
-    color: #1f2020;
-    font-size: 13px;
-    font-weight: 600 !important;
-    padding: 8px 29px 8px 16px !important;
-    background: #f7f8f9 !important;
-  }
-
-  .ant-table-cell {
-    @apply text-gray-900;
-    background: #fff !important;
-    border-bottom: 1px solid #e2e4e6 !important;
-  }
-
-  .ant-table-cell .ant-table-column-sort {
-    @apply text-gray-900;
-    background: #fff !important;
-    border-bottom: 1px solid #e2e4e6 !important;
-  }
-
-  .anticon.anticon-caret-up.ant-table-column-sorter-up {
-    color: #788585;
-  }
-  .anticon.anticon-caret-down.ant-table-column-sorter-down {
-    color: #788585;
-  }
-  .ant-tooltip {
-    display: none;
-  }
-  .ant-table-content {
-    border: 1px solid #e2e4e6;
-  }
-  .ant-table .ant-table-selection .ant-checkbox-checked .ant-checkbox-inner {
-    background-color: #000000;
-    border: 0px solid #b9b9c3;
-  }
-  .ant-table-tbody > tr.ant-table-row-selected > td {
-    background: transparent !important;
-  }
-  .ant-table-cell.ant-table-cell-row-hover {
-    background: transparent !important;
-  }
-  .ant-table-tbody tr .ant-table-cell.ant-table-column-sort {
-    background: transparent !important;
-  }
-  .ant-table-cell.ant-table-column-sort.ant-table-cell-row-hover {
-    background: transparent !important;
-  }
-  .ant-table .ant-table-container .ant-table-content .ant-table-thead {
-    font-family: 'Roboto', sans-serif;
-  }
-  .ant-table .ant-table-container .ant-table-content .ant-table-tbody {
-    font-family: 'Roboto', sans-serif;
-  }
-  .ant-picker-suffix span {
-    display: none;
-  }
-  .ant-picker-dropdown {
-    z-index: 1055 !important;
   }
 }
