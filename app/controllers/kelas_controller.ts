@@ -5,6 +5,10 @@ export default class KelasController {
         return inertia.render("admin/kelas/list")
     }
 
+    form_buat_kelas({inertia}: HttpContext) {
+        return inertia.render("admin/kelas/create")
+    }
+
     jadwal_kelas({inertia}: HttpContext) {
         return inertia.render("admin/kelas/jadwal")
     }

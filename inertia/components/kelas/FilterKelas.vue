@@ -1,6 +1,6 @@
 <template>
     <div class="card-header flex items-center justify-between flex-wrap pb-0">
-        <h4 class="mb-4 font-semibold text-lg text-dark">Classes List</h4>
+        <h4 class="mb-4 font-semibold text-lg text-dark">Daftar Kelas</h4>
         <div class="flex items-center flex-wrap">
             <div class="input-icon-start mb-4 mr-2 relative">
                 <span

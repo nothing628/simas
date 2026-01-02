@@ -22,6 +22,7 @@ router
   .group(() => {
     router.get('/', [AdminController, 'index'])
     router.get('/kelas/list', [KelasController, 'daftar_kelas'])
+    router.get('/kelas/create', [KelasController, 'form_buat_kelas'])
     router.get('/kelas/jadwal', [KelasController, 'jadwal_kelas'])
     router.get('/kelas/ruang', [KelasController, 'ruang_kelas'])
   })

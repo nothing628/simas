@@ -1,6 +1,6 @@
 <template>
 
-    <Head title="Dashboard" />
+    <Head title="Dashboard - Daftar Kelas" />
     <div class="main-wrapper">
         <Header />
         <Sidebar />
@@ -34,7 +34,7 @@
                                 </ul>
                             </template>
                         </VDropdown>
-                        <div class="mb-2"><a href="/vue/template/students/add-student"
+                        <div class="mb-2"><a href="/admin/kelas/create"
                                 class="btn btn-primary flex items-center">
                                 <i class="ti ti-square-rounded-plus-filled me-2"></i>
                                 Tambah Kelas</a></div>
